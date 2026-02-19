@@ -1,0 +1,21 @@
+# Gradle
+.gradle/
+build/
+
+# Local
+local.properties
+
+# IDE - вся папка целиком
+.idea/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Android test screenshots
+/captures
+
+# Android NDK (C++ build files)
+.externalNativeBuild
+.cxx
