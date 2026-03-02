@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -35,7 +36,7 @@
         android:gravity="center"
         android:textAllCaps="false"
 
-        app:icon="@drawable/magnifier"
+        app:icon="@drawable/ic_magnifier_24"
         app:iconGravity="textStart"
         app:iconPadding="@dimen/iconPadding"
         app:iconTint="@color/black"
@@ -60,7 +61,7 @@
         android:gravity="center"
         android:textAllCaps="false"
 
-        app:icon="@drawable/note"
+        app:icon="@drawable/ic_note_24"
         app:iconGravity="textStart"
         app:iconPadding="@dimen/iconPadding"
         app:iconTint="@color/black"
@@ -85,7 +86,7 @@
         android:gravity="center"
         android:textAllCaps="false"
 
-        app:icon="@drawable/settings"
+        app:icon="@drawable/ic_settings_24"
         app:iconGravity="textStart"
         app:iconPadding="@dimen/iconPadding"
         app:iconTint="@color/black"

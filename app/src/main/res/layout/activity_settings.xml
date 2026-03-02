@@ -22,8 +22,9 @@
         android:layout_marginStart="4dp"
         android:layout_marginEnd="4dp"
         android:id="@+id/back"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
 
-        app:icon="@drawable/arrow"
+        app:icon="@drawable/ic_arrow_back_24"
         app:iconGravity="textStart"
         app:iconTint="@color/black"
         app:iconSize="@dimen/iconSize"
@@ -39,8 +40,7 @@
             android:textColor="@color/black"
             android:fontFamily="sans-serif-medium"
             android:layout_marginStart="12dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="12dp"
+            android:layout_marginTop="14dp"
             />
     </LinearLayout>
     
@@ -94,7 +94,7 @@
             android:layout_gravity="end"
             android:layout_marginTop="21dp"
             android:layout_marginBottom="21dp"
-            android:src="@drawable/share"
+            android:src="@drawable/ic_share_app_24"
             app:tint="@color/YP_Text_Gray"
              />
 
@@ -123,7 +123,7 @@
             android:layout_gravity="end"
             android:layout_marginTop="21dp"
             android:layout_marginBottom="21dp"
-            android:src="@drawable/support"
+            android:src="@drawable/ic_support_24"
             app:tint="@color/YP_Text_Gray"
             />
 
@@ -152,7 +152,7 @@
             android:layout_gravity="end"
             android:layout_marginTop="21dp"
             android:layout_marginBottom="21dp"
-            android:src="@drawable/arrowsmall"
+            android:src="@drawable/ic_arrow_small_24"
             app:tint="@color/YP_Text_Gray"
             />
 

@@ -22,7 +22,7 @@ class SettingsActivity : AppCompatActivity() {
 
         backButtom.setOnClickListener {
             val toMainDisplay = Intent(this, MainActivity::class.java)
-            startActivity(toMainDisplay)
+            finish()
         }
     }
 }
