@@ -1,19 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/YP_Blue"
+    android:orientation="vertical"
+    android:paddingHorizontal="16dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="40dp"
+            android:text="Playlist maker"
+            android:textColor="@color/white"
+            android:textSize="22sp" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_marginBottom="@dimen/marginBottom"
+        android:id="@+id/search"
+        app:rippleColor="?attr/colorOnSecondary"
+
+        android:text="@string/search"
+        android:textSize="@dimen/textSize"
+        android:textColor="@color/black"
+        android:fontFamily="sans-serif-medium"
+        android:lineHeight="@dimen/textSize"
+        android:letterSpacing="0"
+        android:gravity="center"
+        android:textAllCaps="false"
+
+        app:icon="@drawable/ic_magnifier_24"
+        app:iconGravity="textStart"
+        app:iconPadding="@dimen/iconPadding"
+        app:iconTint="@color/black"
+        app:iconSize="@dimen/iconSize"
+        app:cornerRadius="16dp"
+        android:backgroundTint="@color/white"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_marginBottom="@dimen/marginBottom"
+        android:id="@+id/media_library"
+        app:rippleColor="?attr/colorOnSecondary"
+
+        android:text="@string/media_library"
+        android:textSize="@dimen/textSize"
+        android:textColor="@color/black"
+        android:fontFamily="sans-serif-medium"
+        android:lineHeight="@dimen/textSize"
+        android:letterSpacing="0"
+        android:gravity="center"
+        android:textAllCaps="false"
+
+        app:icon="@drawable/ic_note_24"
+        app:iconGravity="textStart"
+        app:iconPadding="@dimen/iconPadding"
+        app:iconTint="@color/black"
+        app:iconSize="@dimen/iconSize"
+        app:cornerRadius="16dp"
+        android:backgroundTint="@color/white"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_marginBottom="28dp"
+        android:id="@+id/settings"
+        app:rippleColor="?attr/colorOnSecondary"
+
+        android:text="@string/settings"
+        android:textSize="@dimen/textSize"
+        android:textColor="@color/black"
+        android:fontFamily="sans-serif-medium"
+        android:lineHeight="@dimen/textSize"
+        android:letterSpacing="0"
+        android:gravity="center"
+        android:textAllCaps="false"
+
+        app:icon="@drawable/ic_settings_24"
+        app:iconGravity="textStart"
+        app:iconPadding="@dimen/iconPadding"
+        app:iconTint="@color/black"
+        app:iconSize="@dimen/iconSize"
+        app:cornerRadius="16dp"
+        android:backgroundTint="@color/white"/>
+
+</LinearLayout>
