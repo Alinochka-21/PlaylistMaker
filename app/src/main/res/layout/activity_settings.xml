@@ -12,9 +12,11 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:orientation="horizontal"
-        android:layout_marginBottom="24dp">
+        android:layout_marginBottom="24dp"
+        android:layout_marginStart="-16dp">
 
     <com.google.android.material.button.MaterialButton
+
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="5"
@@ -26,40 +28,33 @@
 
         app:icon="@drawable/ic_arrow_back_24"
         app:iconGravity="textStart"
-        app:iconTint="@color/black"
+        app:iconTint="@color/YP_Black"
         app:iconSize="@dimen/iconSize"
-        android:backgroundTint="@color/white"
+        android:backgroundTint="@color/YP_White"
         android:contentDescription="@string/arrow"/>
 
         <TextView
+
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="@string/settings"
             android:textSize="@dimen/textSize"
-            android:textColor="@color/black"
-            android:fontFamily="sans-serif-medium"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="14dp"
+            android:textColor="@color/YP_Black"
+            android:fontFamily="@font/ys_display_medium"
+            android:textFontWeight="400"
+            android:layout_marginTop="16dp"
             />
     </LinearLayout>
+
     
     <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        style="@style/FrameLayoutStyleInSettings">
 
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
+            style="@style/TextViewStyleInSettings"
             android:text="@string/theme"
-            android:layout_marginTop="21dp"
-            android:layout_marginBottom="21dp"
-            android:gravity="center"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:textStyle="normal"
             />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
@@ -72,88 +67,49 @@
     </FrameLayout>
 
     <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        style="@style/FrameLayoutStyleInSettings">
 
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
+            style="@style/TextViewStyleInSettings"
             android:text="@string/share"
-            android:layout_marginTop="21dp"
-            android:layout_marginBottom="21dp"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:textStyle="normal"
             />
 
         <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="end"
-            android:layout_marginTop="21dp"
-            android:layout_marginBottom="21dp"
+            style="@style/ImageViewStyleInSettings"
             android:src="@drawable/ic_share_app_24"
-            app:tint="@color/YP_Text_Gray"
              />
 
     </FrameLayout>
 
     <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        style="@style/FrameLayoutStyleInSettings">
 
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
+            style="@style/TextViewStyleInSettings"
             android:text="@string/support"
-            android:layout_marginTop="21dp"
-            android:layout_marginBottom="21dp"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:textStyle="normal"
             />
 
         <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="end"
-            android:layout_marginTop="21dp"
-            android:layout_marginBottom="21dp"
+            style="@style/ImageViewStyleInSettings"
             android:src="@drawable/ic_support_24"
-            app:tint="@color/YP_Text_Gray"
             />
 
     </FrameLayout>
 
     <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        style="@style/FrameLayoutStyleInSettings">
 
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
+            style="@style/TextViewStyleInSettings"
             android:text="@string/agreement"
-            android:layout_marginTop="21dp"
-            android:layout_marginBottom="21dp"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:textStyle="normal"
             />
 
         <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="end"
-            android:layout_marginTop="21dp"
-            android:layout_marginBottom="21dp"
+            style="@style/ImageViewStyleInSettings"
             android:src="@drawable/ic_arrow_small_24"
-            app:tint="@color/YP_Text_Gray"
             />
 
     </FrameLayout>
