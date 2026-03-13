@@ -19,3 +19,4 @@ Thumbs.db
 # Android NDK (C++ build files)
 .externalNativeBuild
 .cxx
+.kotlin

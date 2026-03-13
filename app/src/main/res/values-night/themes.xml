@@ -12,8 +12,17 @@
         <!-- Another. -->
         <item name="android:windowBackground">?attr/colorPrimary</item>
     </style>
+    <style name="ImageViewStyleInSettings">
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="android:layout_gravity">end</item>
+        <item name="android:layout_marginTop">21dp</item>
+        <item name="android:layout_marginBottom">21dp</item>
+        <item name="tint">@color/YP_White</item>
+    </style>
 
     <style name="Theme.OnlyMainDisplay" parent="Base.Theme.PlaylistMaker">
         <item name="android:windowBackground">?attr/colorPrimary</item>
     </style>
+
 </resources>

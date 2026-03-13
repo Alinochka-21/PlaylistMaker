@@ -53,8 +53,5 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(agreementIntent)
 
         }
-
-
-
     }
 }
