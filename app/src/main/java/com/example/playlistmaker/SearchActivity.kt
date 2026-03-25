@@ -32,7 +32,7 @@ class SearchActivity : AppCompatActivity() {
             insets
         }
 
-        val tracks: ArrayList<Track> = arrayListOf(
+        val tracks: List<Track> = listOf(
             Track(getString(R.string.track1),getString(R.string.artist1),getString(R.string.time1),getString(R.string.url1)),
             Track(getString(R.string.track2),getString(R.string.artist2),getString(R.string.time2),getString(R.string.url2)),
             Track(getString(R.string.track3),getString(R.string.artist3),getString(R.string.time3),getString(R.string.url3)),
