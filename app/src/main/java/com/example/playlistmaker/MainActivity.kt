@@ -2,10 +2,10 @@ package com.example.playlistmaker
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import com.google.android.material.button.MaterialButton
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -13,19 +13,17 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val imageSearch = findViewById<MaterialButton>(R.id.search)
-        val imageClickListener: View.OnClickListener = object : View.OnClickListener{
-            override fun onClick(v: View?){
-                val toSearchDisplay = Intent(this@MainActivity, SearchActivity::class.java)
-                startActivity(toSearchDisplay)
-            }
-        }
-        imageSearch.setOnClickListener(imageClickListener)
 
+        val imageSearch = findViewById<MaterialButton>(R.id.search)
+        imageSearch.setOnClickListener{
+            val toSearchDisplay = Intent(this@MainActivity, SearchActivity::class.java)
+            startActivity(toSearchDisplay)
+        }
+        
         val imageLibrary = findViewById<MaterialButton>(R.id.media_library)
         imageLibrary.setOnClickListener {
-            val toMedia_library = Intent(this, Media_library::class.java)
-            startActivity(toMedia_library)
+            val toMediaLibrary = Intent(this, Media_library::class.java)
+            startActivity(toMediaLibrary)
         }
 
         val imageSettings = findViewById<MaterialButton>(R.id.settings)
