@@ -49,4 +49,28 @@
         <item name="android:focusable">true</item>
         <item name="android:foreground">?selectableItemBackground</item>
     </style>
+    <style name="TextViewInTrackExample">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:textColor">@color/YP_Text_Gray</item>
+    </style>
+    <style name="ImageViewPointStyle">
+        <item name="android:layout_width">13dp</item>
+        <item name="android:layout_height">13dp</item>
+        <item name="android:src">@drawable/ic_point_13</item>
+        <item name="android:tint">@color/YP_Text_Gray</item>
+    </style>
+    <style name="IconArrowSmallInSearch">
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_marginBottom">11dp</item>
+        <item name="android:src">@drawable/ic_arrow_small_24</item>
+        <item name="android:tint">@color/YP_Text_Gray</item>
+    </style>
 </resources>
