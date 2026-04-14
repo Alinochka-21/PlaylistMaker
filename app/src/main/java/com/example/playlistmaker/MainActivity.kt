@@ -13,7 +13,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
         val imageSearch = findViewById<MaterialButton>(R.id.search)
         imageSearch.setOnClickListener{
             val toSearchDisplay = Intent(this@MainActivity, SearchActivity::class.java)
@@ -31,7 +30,5 @@ class MainActivity : AppCompatActivity() {
             val toSettingsDisplay = Intent(this, SettingsActivity::class.java)
             startActivity(toSettingsDisplay)
         }
-
-
     }
 }
