@@ -26,6 +26,7 @@ class SearchActivity : AppCompatActivity() {
     private var savedText: String = ""
     private lateinit var editText: EditText
     lateinit var lastQuery: SearchQuery
+    lateinit var searchHistory: SearchHistory
 
 
     val tracks: ArrayList<Track> = arrayListOf()
@@ -40,11 +41,31 @@ class SearchActivity : AppCompatActivity() {
             insets
         }
 
-        val recyclerTrackView = findViewById<RecyclerView>(R.id.recyclerTrackView)
-        recyclerTrackView.visibility = View.GONE
+        val sharedPref = getSharedPreferences("app_prefs", MODE_PRIVATE)
+         searchHistory = SearchHistory(sharedPref)
 
-        val adapter = TrackAdapter(tracks)
-        recyclerTrackView.adapter = adapter
+
+        val recyclerSearchTrackView = findViewById<RecyclerView>(R.id.recyclerTrackView)
+        recyclerSearchTrackView.visibility = View.GONE
+
+        val recyclerHistoryTrackView = findViewById<RecyclerView>(R.id.recyclerviewTrackHistory)
+        val historyAdapter = TrackAdapter(searchHistory.getHistoryTrackList()){}
+
+        val searchAdapter = TrackAdapter(tracks){track ->
+            searchHistory.addTrack(track)
+            historyAdapter.updateTracks(searchHistory.getHistoryTrackList())
+        }
+
+        recyclerSearchTrackView.adapter = searchAdapter
+        recyclerHistoryTrackView.adapter = historyAdapter
+
+        val trackHistoryLayout = findViewById<LinearLayout>(R.id.trackHistory)
+        val clearHistoryButton = findViewById<com.google.android.material.button.MaterialButton>(R.id.bottomClearTrackHistory)
+        clearHistoryButton.setOnClickListener {
+            searchHistory.clearTrackHistory()
+            historyAdapter.updateTracks(emptyList())
+            trackHistoryLayout.visibility = View.GONE
+        }
 
         val placeholderLayoutNotFound = findViewById<LinearLayout>(R.id.placeholderLayoutNotFound)
         val placeholderNotInternet = findViewById<LinearLayout>(R.id.placeholderNotInternet)
@@ -59,13 +80,13 @@ class SearchActivity : AppCompatActivity() {
                     placeholderLayoutNotFound.visibility = View.VISIBLE
                     placeholderNotInternet.visibility = View.GONE
                     tracks.clear()
-                    adapter.notifyDataSetChanged()
+                    searchAdapter.notifyDataSetChanged()
                 }
                 R.id.placeholderNotInternet -> {
                     placeholderNotInternet.visibility = View.VISIBLE
                     placeholderLayoutNotFound.visibility = View.GONE
                     tracks.clear()
-                    adapter.notifyDataSetChanged()
+                    searchAdapter.notifyDataSetChanged()
                 }
             }
         }
@@ -77,7 +98,7 @@ class SearchActivity : AppCompatActivity() {
                         if (response.body()?.results?.isNotEmpty() == true) {
                             tracks.clear()
                             tracks.addAll(response.body()!!.results)
-                            adapter.notifyDataSetChanged()
+                            searchAdapter.notifyDataSetChanged()
                             showErrorPlaceholder(R.id.recyclerTrackView)
                         }
                         else {
@@ -114,16 +135,29 @@ class SearchActivity : AppCompatActivity() {
             editText.setText("")
             val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
-            recyclerTrackView.visibility = View.GONE
+            recyclerSearchTrackView.visibility = View.GONE
             showErrorPlaceholder(R.id.recyclerTrackView)
+        }
+
+
+        editText.setOnFocusChangeListener{view, hasFocus ->
+            trackHistoryLayout.visibility = if (hasFocus && editText.text.isEmpty() && searchHistory.getHistoryTrackList().isNotEmpty()) View.VISIBLE else View.GONE
         }
 
         editText.doOnTextChanged { s, _, _, _ ->
             buttonClear.visibility = clearButtonVisibility(s)
             savedText = s?.toString() ?: ""
-            recyclerTrackView.visibility=View.VISIBLE
+
+            recyclerSearchTrackView.visibility=View.VISIBLE
+
             if (savedText.isEmpty()){
-                recyclerTrackView.visibility=View.GONE
+                recyclerSearchTrackView.visibility=View.GONE
+
+                if (editText.hasFocus() && searchHistory.getHistoryTrackList().isNotEmpty()) trackHistoryLayout.visibility = View.VISIBLE
+            } else {
+                recyclerSearchTrackView.visibility = View.VISIBLE
+
+                trackHistoryLayout.visibility = View.GONE
             }
         }
 
