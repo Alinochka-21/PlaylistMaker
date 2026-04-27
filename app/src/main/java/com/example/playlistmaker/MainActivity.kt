@@ -14,7 +14,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val sharedPref = getSharedPreferences("app_prefs", MODE_PRIVATE)
 
-        Log.d("search", "мы в мейнактивити значение дарк темы: ${sharedPref.getBoolean(KEY_DARK_THEME,(applicationContext as App).darkTheme)}")
         if (sharedPref.getBoolean(KEY_DARK_THEME,true)){
             (applicationContext as App).switchTheme(true)
         } else {
