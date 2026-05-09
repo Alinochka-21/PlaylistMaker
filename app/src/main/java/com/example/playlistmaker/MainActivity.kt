@@ -4,12 +4,21 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
+import android.util.Log
+import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.button.MaterialButton
 
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val sharedPref = getSharedPreferences("app_prefs", MODE_PRIVATE)
+
+        if (sharedPref.getBoolean(KEY_DARK_THEME,true)){
+            (applicationContext as App).switchTheme(true)
+        } else {
+            (applicationContext as App).switchTheme(false)
+        }
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 

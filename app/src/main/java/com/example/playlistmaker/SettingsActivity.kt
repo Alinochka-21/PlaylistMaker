@@ -10,6 +10,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import java.net.URI
 import androidx.core.net.toUri
+import androidx.core.content.edit
+
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,6 +29,18 @@ class SettingsActivity : AppCompatActivity() {
             val toMainDisplay = Intent(this, MainActivity::class.java)
             finish()
         }
+
+        val sharedPref = getSharedPreferences("app_prefs", MODE_PRIVATE)
+
+        val  themeSwitcher = findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.themeSwitcher)
+        themeSwitcher.setOnCheckedChangeListener{ switcher, checked ->
+            (applicationContext as App).switchTheme(checked)
+            sharedPref.edit {
+                putBoolean(KEY_DARK_THEME, checked)
+            }
+        }
+
+        themeSwitcher.isChecked = sharedPref.getBoolean(KEY_DARK_THEME,true)
 
         val shareButton = findViewById<FrameLayout>(R.id.shareAPK)
         shareButton.setOnClickListener {
