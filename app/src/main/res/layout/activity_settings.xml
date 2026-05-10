@@ -16,7 +16,6 @@
         android:layout_marginStart="-16dp">
 
     <com.google.android.material.button.MaterialButton
-
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="5"
@@ -31,7 +30,8 @@
         app:iconTint="?attr/colorSecondary"
         app:iconSize="@dimen/iconSize"
         android:backgroundTint="?attr/colorPrimary"
-        android:contentDescription="@string/arrow"/>
+        android:contentDescription="@string/arrow"
+        />
 
         <TextView
             android:layout_width="match_parent"

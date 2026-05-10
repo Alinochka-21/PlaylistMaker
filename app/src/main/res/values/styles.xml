@@ -99,5 +99,10 @@
         <item name="android:textFontWeight">400</item>
         <item name="android:layout_marginBottom">24dp</item>
     </style>
+    <style name="informationAboutTrack">
+        <item name="android:textSize">13sp</item>
+        <item name="fontFamily">@font/ys_display_regular</item>
+        <item name="fontWeight">400</item>
+    </style>
 
 </resources>
