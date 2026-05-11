@@ -70,6 +70,11 @@
         <item name="android:textFontWeight">400</item>
         <item name="android:layout_marginBottom">24dp</item>
     </style>
+    <style name="roundButtonInPlayer">
+        <item name="android:backgroundTint">@color/YP_Very_Dark_Gray</item>
+        <item name="android:tint">@color/YP_White</item>
+    </style>
+
 
     <style name="Theme.OnlyMainDisplay" parent="Base.Theme.PlaylistMaker">
         <item name="android:windowBackground">?attr/colorPrimary</item>

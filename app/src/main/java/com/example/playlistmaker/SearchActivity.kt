@@ -13,6 +13,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.networking.SearchQuery
@@ -45,15 +46,45 @@ class SearchActivity : AppCompatActivity() {
          searchHistory = SearchHistory(sharedPref)
 
 
-        val recyclerSearchTrackView = findViewById<RecyclerView>(R.id.recyclerTrackView)
-        recyclerSearchTrackView.visibility = View.GONE
+        val recyclerSearchTrackView = findViewById<RecyclerView>(R.id.recyclerTrackView).apply {
+            isVisible = false
+        }
 
         val recyclerHistoryTrackView = findViewById<RecyclerView>(R.id.recyclerviewTrackHistory)
-        val historyAdapter = TrackAdapter(searchHistory.getHistoryTrackList()){}
+        val historyAdapter = TrackAdapter(searchHistory.getHistoryTrackList()){ track ->
+
+            val intent = Intent(this, AudioPlayerActivity::class.java)
+            intent.apply {
+                putExtra("trackName", track.trackName)
+                putExtra("artistName", track.artistName)
+                putExtra("trackTimeMillis", track.trackTimeMillis)
+                putExtra("artworkUrl100", track.artworkUrl100)
+                putExtra("country", track.country)
+                putExtra("primaryGenreName", track.primaryGenreName)
+                putExtra("collectionName", track.collectionName)
+                putExtra("releaseDate", track.releaseDate)
+                putExtra("artworkUrl100", track.artworkUrl100)
+            }
+            startActivity(intent)
+        }
 
         val searchAdapter = TrackAdapter(tracks){track ->
             searchHistory.addTrack(track)
             historyAdapter.updateTracks(searchHistory.getHistoryTrackList())
+
+            val intent = Intent(this, AudioPlayerActivity::class.java)
+            intent.apply {
+                putExtra("trackName", track.trackName)
+                putExtra("artistName", track.artistName)
+                putExtra("trackTimeMillis", track.trackTimeMillis)
+                putExtra("artworkUrl100", track.artworkUrl100)
+                putExtra("country", track.country)
+                putExtra("primaryGenreName", track.primaryGenreName)
+                putExtra("collectionName", track.collectionName)
+                putExtra("releaseDate", track.releaseDate)
+                putExtra("artworkUrl100", track.artworkUrl100)
+            }
+            startActivity(intent)
         }
 
         recyclerSearchTrackView.adapter = searchAdapter
@@ -122,8 +153,8 @@ class SearchActivity : AppCompatActivity() {
             performSearch(lastQuery)
         }
 
-        val backButtom = findViewById<com.google.android.material.button.MaterialButton>(R.id.back)
-        backButtom.setOnClickListener {
+        val backButton = findViewById<com.google.android.material.button.MaterialButton>(R.id.back)
+        backButton.setOnClickListener {
             Intent(this, MainActivity::class.java)
             finish()
         }
@@ -141,7 +172,7 @@ class SearchActivity : AppCompatActivity() {
 
 
         editText.setOnFocusChangeListener{view, hasFocus ->
-            trackHistoryLayout.visibility = if (hasFocus && editText.text.isEmpty() && searchHistory.getHistoryTrackList().isNotEmpty()) View.VISIBLE else View.GONE
+            trackHistoryLayout.isVisible = hasFocus && editText.text.isEmpty() && searchHistory.getHistoryTrackList().isNotEmpty()
         }
 
         editText.doOnTextChanged { s, _, _, _ ->
