@@ -13,6 +13,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.networking.SearchQuery
@@ -45,15 +46,19 @@ class SearchActivity : AppCompatActivity() {
          searchHistory = SearchHistory(sharedPref)
 
 
-        val recyclerSearchTrackView = findViewById<RecyclerView>(R.id.recyclerTrackView)
-        recyclerSearchTrackView.visibility = View.GONE
+        val recyclerSearchTrackView = findViewById<RecyclerView>(R.id.recyclerTrackView).apply {
+            isVisible = false
+        }
 
         val recyclerHistoryTrackView = findViewById<RecyclerView>(R.id.recyclerviewTrackHistory)
-        val historyAdapter = TrackAdapter(searchHistory.getHistoryTrackList()){}
+        val historyAdapter = TrackAdapter(searchHistory.getHistoryTrackList()){ track ->
+            startActivity(createIntent(this,track))
+        }
 
         val searchAdapter = TrackAdapter(tracks){track ->
             searchHistory.addTrack(track)
             historyAdapter.updateTracks(searchHistory.getHistoryTrackList())
+            startActivity(createIntent(this,track))
         }
 
         recyclerSearchTrackView.adapter = searchAdapter
@@ -116,32 +121,31 @@ class SearchActivity : AppCompatActivity() {
             })
         }
 
-        val updateButton = findViewById<com.google.android.material.button.MaterialButton>(R.id.placeholderErrorButton)
-
-        updateButton.setOnClickListener {
-            performSearch(lastQuery)
+        val updateButton = findViewById<com.google.android.material.button.MaterialButton>(R.id.placeholderErrorButton).apply {
+            setOnClickListener {
+                performSearch(lastQuery)
+            }
         }
 
-        val backButtom = findViewById<com.google.android.material.button.MaterialButton>(R.id.back)
-        backButtom.setOnClickListener {
-            Intent(this, MainActivity::class.java)
-            finish()
+        val backButton = findViewById<com.google.android.material.button.MaterialButton>(R.id.back).apply {
+            setOnClickListener {
+                Intent(this@SearchActivity, MainActivity::class.java)
+                finish() }
         }
 
-        val buttonClear = findViewById<ImageView>(R.id.clearIcon)
         editText = findViewById(R.id.editText)
-
-        buttonClear.setOnClickListener {
-            editText.setText("")
-            val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
-            recyclerSearchTrackView.visibility = View.GONE
-            showErrorPlaceholder(R.id.recyclerTrackView)
+        val buttonClear = findViewById<ImageView>(R.id.clearIcon).apply {
+            setOnClickListener {
+                editText.setText("")
+                val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+                recyclerSearchTrackView.visibility = View.GONE
+                showErrorPlaceholder(R.id.recyclerTrackView)
+            }
         }
-
 
         editText.setOnFocusChangeListener{view, hasFocus ->
-            trackHistoryLayout.visibility = if (hasFocus && editText.text.isEmpty() && searchHistory.getHistoryTrackList().isNotEmpty()) View.VISIBLE else View.GONE
+            trackHistoryLayout.isVisible = hasFocus && editText.text.isEmpty() && searchHistory.getHistoryTrackList().isNotEmpty()
         }
 
         editText.doOnTextChanged { s, _, _, _ ->
@@ -152,11 +156,10 @@ class SearchActivity : AppCompatActivity() {
 
             if (savedText.isEmpty()){
                 recyclerSearchTrackView.visibility=View.GONE
-
                 if (editText.hasFocus() && searchHistory.getHistoryTrackList().isNotEmpty()) trackHistoryLayout.visibility = View.VISIBLE
+
             } else {
                 recyclerSearchTrackView.visibility = View.VISIBLE
-
                 trackHistoryLayout.visibility = View.GONE
             }
         }
@@ -178,9 +181,9 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    override fun onSaveInstanceState(inBundle: Bundle){
-        super.onSaveInstanceState(inBundle)
-        inBundle.putString(KEY_FOR_SAVE_TEXT_IN_SEARCH,savedText)
+    override fun onSaveInstanceState(outState: Bundle){
+        super.onSaveInstanceState(outState)
+        outState.putString(KEY_FOR_SAVE_TEXT_IN_SEARCH,savedText)
     }
 
     override fun onRestoreInstanceState(fromBundle: Bundle){
@@ -192,5 +195,12 @@ class SearchActivity : AppCompatActivity() {
     companion object{
         const val KEY_FOR_SAVE_TEXT_IN_SEARCH = "KEY_FOR_SAVE_VALUE_IN_SEARCH"
         const val SAVE_TEXT_IN_SEARCH = ""
+        const val CURRENT_TRACK = "CURRENT_TRACK"
+
+        fun createIntent(context: Context, currentTrack: Track): Intent {
+            return Intent(context, AudioPlayerActivity::class.java).apply {
+                putExtra(CURRENT_TRACK, currentTrack)
+            }
+        }
     }
 }
