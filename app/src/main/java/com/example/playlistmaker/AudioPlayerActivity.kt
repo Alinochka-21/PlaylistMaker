@@ -1,7 +1,9 @@
 package com.example.playlistmaker
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -28,6 +30,13 @@ class AudioPlayerActivity : AppCompatActivity() {
             insets
         }
 
+        val currentTrack = if (Build.VERSION.SDK_INT >= 33){
+            intent.getParcelableExtra(CURRENT_TRACK, Track::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra(CURRENT_TRACK) as? Track
+        }
+
         val backButtonInPlayer = findViewById<ImageButton>(R.id.backButtonInPlayer).apply {
             setOnClickListener {
                 finish()
@@ -35,7 +44,7 @@ class AudioPlayerActivity : AppCompatActivity() {
         }
         val trackConerOnPlayer = findViewById<ImageView>(R.id.trackConerOnPlayer).apply {
             Glide.with(context)
-                .load(intent.getStringExtra("artworkUrl100")!!.replaceAfterLast('/',"512x512bb.jpg"))
+                .load(currentTrack!!.artworkUrl100.replaceAfterLast('/',"512x512bb.jpg"))
                 .placeholder(R.drawable.ic_default_45)
                 .error(R.drawable.ic_default_45)
                 .transform(RoundedCorners(dpToPx(8f, this.resources.displayMetrics).toInt()))
@@ -43,20 +52,20 @@ class AudioPlayerActivity : AppCompatActivity() {
         }
 
         val trackNameView = findViewById<TextView>(R.id.trackNameInPlayer).apply {
-            text = intent.getStringExtra("trackName")
+            text = currentTrack!!.trackName
         }
         val artistName = findViewById<TextView>(R.id.artistNameInPlayer).apply {
-            text = intent.getStringExtra("artistName")
+            text = currentTrack!!.artistName
         }
 
         val trackTime = findViewById<TextView>(R.id.trackDurationValue).apply {
-            text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(intent.getLongExtra("trackTimeMillis", 0))
+            text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentTrack!!.trackTimeMillis)
         }
 
         val trackCollection = findViewById<TextView>(R.id.trackAlbum)
         val trackCollectionName = findViewById<TextView>(R.id.trackAlbumValue).apply {
-            if(!intent.getStringExtra("collectionName").isNullOrEmpty()) {
-                text = intent.getStringExtra("collectionName")
+            if(!currentTrack!!.collectionName.isNullOrEmpty()) {
+                text = currentTrack.collectionName
             } else{
                 visibility = View.GONE
                 trackCollection.visibility = View.GONE
@@ -65,8 +74,8 @@ class AudioPlayerActivity : AppCompatActivity() {
 
         val trackYear = findViewById<TextView>(R.id.trackYear)
         val trackYearValue = findViewById<TextView>(R.id.trackYearValue).apply {
-            if (!intent.getStringExtra("releaseDate").isNullOrEmpty()){
-                text = intent.getStringExtra("releaseDate")!!.take(4)
+            if (!currentTrack!!.releaseDate.isNullOrEmpty()){
+                text = currentTrack.releaseDate.take(4)
             }
             else {
                 visibility = View.GONE
@@ -74,10 +83,13 @@ class AudioPlayerActivity : AppCompatActivity() {
             }
         }
         val trackGenreName = findViewById<TextView>(R.id.trackGenreValue).apply {
-            text = intent.getStringExtra("primaryGenreName")
+            text = currentTrack!!.primaryGenreName
         }
         val trackCountry = findViewById<TextView>(R.id.trackCountryValue).apply {
-            text = intent.getStringExtra("country")
+            text = currentTrack!!.country
         }
+    }
+    companion object{
+        const val CURRENT_TRACK = "CURRENT_TRACK"
     }
 }
