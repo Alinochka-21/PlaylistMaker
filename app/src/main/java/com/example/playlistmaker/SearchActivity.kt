@@ -3,12 +3,15 @@ package com.example.playlistmaker
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -28,9 +31,12 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var editText: EditText
     lateinit var lastQuery: SearchQuery
     lateinit var searchHistory: SearchHistory
-
-
     val tracks: ArrayList<Track> = arrayListOf()
+    private var canPressOnTrack = true
+    private val mainThreadHandler = Handler(Looper.getMainLooper())
+    lateinit var progressBar: ProgressBar
+    lateinit var searchRunnable: Runnable
+    val taG = "f"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,13 +58,17 @@ class SearchActivity : AppCompatActivity() {
 
         val recyclerHistoryTrackView = findViewById<RecyclerView>(R.id.recyclerviewTrackHistory)
         val historyAdapter = TrackAdapter(searchHistory.getHistoryTrackList()){ track ->
-            startActivity(createIntent(this,track))
+            if (clickDebounce()) {
+                startActivity(createIntent(this, track))
+            }
         }
 
         val searchAdapter = TrackAdapter(tracks){track ->
-            searchHistory.addTrack(track)
-            historyAdapter.updateTracks(searchHistory.getHistoryTrackList())
-            startActivity(createIntent(this,track))
+            if (clickDebounce()) {
+                searchHistory.addTrack(track)
+                historyAdapter.updateTracks(searchHistory.getHistoryTrackList())
+                startActivity(createIntent(this, track))
+            }
         }
 
         recyclerSearchTrackView.adapter = searchAdapter
@@ -96,9 +106,15 @@ class SearchActivity : AppCompatActivity() {
             }
         }
 
+        progressBar = findViewById(R.id.progressBarInSearchActivity)
+
         fun performSearch(request: SearchQuery){
+            recyclerSearchTrackView.isVisible = false
+            progressBar.isVisible = true
             ServiceWork.tracksService.search(request.text).enqueue(object : Callback<TracksResponse> {
                 override fun onResponse(call: Call<TracksResponse>, response: Response<TracksResponse>) {
+                    progressBar.isVisible = false
+                    recyclerSearchTrackView.isVisible = true
                     if (response.code() == 200){
                         if (response.body()?.results?.isNotEmpty() == true) {
                             tracks.clear()
@@ -107,7 +123,12 @@ class SearchActivity : AppCompatActivity() {
                             showErrorPlaceholder(R.id.recyclerTrackView)
                         }
                         else {
-                            showErrorPlaceholder(R.id.placeholderLayoutNotFound)
+                            if (savedText.isNotEmpty()) {
+                                showErrorPlaceholder(R.id.placeholderLayoutNotFound)
+                            }
+                            else {
+                                recyclerSearchTrackView.isVisible = false
+                            }
                         }
                     } else {
                         showErrorPlaceholder(R.id.placeholderNotInternet)
@@ -115,6 +136,7 @@ class SearchActivity : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
+                    progressBar.isVisible = false
                     showErrorPlaceholder(R.id.placeholderNotInternet)
                     lastQuery = request
                 }
@@ -151,18 +173,20 @@ class SearchActivity : AppCompatActivity() {
         editText.doOnTextChanged { s, _, _, _ ->
             buttonClear.visibility = clearButtonVisibility(s)
             savedText = s?.toString() ?: ""
-
-            recyclerSearchTrackView.visibility=View.VISIBLE
+          //  recyclerSearchTrackView.visibility=View.VISIBLE
+            searchDebounce()
 
             if (savedText.isEmpty()){
-                recyclerSearchTrackView.visibility=View.GONE
-                if (editText.hasFocus() && searchHistory.getHistoryTrackList().isNotEmpty()) trackHistoryLayout.visibility = View.VISIBLE
+                recyclerSearchTrackView.isVisible = false
+                if (editText.hasFocus() && searchHistory.getHistoryTrackList().isNotEmpty()) trackHistoryLayout.isVisible = true
 
             } else {
-                recyclerSearchTrackView.visibility = View.VISIBLE
-                trackHistoryLayout.visibility = View.GONE
+                recyclerSearchTrackView.isVisible = true
+                trackHistoryLayout.isVisible = false
             }
         }
+
+        searchRunnable = Runnable { performSearch(SearchQuery(savedText)) }
 
         editText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -192,10 +216,30 @@ class SearchActivity : AppCompatActivity() {
         editText.setText(savedText)
     }
 
+    fun clickDebounce(): Boolean{
+        val currentState = canPressOnTrack
+        if (canPressOnTrack){
+            canPressOnTrack = false
+            mainThreadHandler.postDelayed({canPressOnTrack = true}, CLICK_DEBOUNCE_DELAY)
+        }
+        return currentState
+    }
+
+    fun searchDebounce(){
+        if (savedText.isNotEmpty()) {
+            mainThreadHandler.apply {
+                removeCallbacks(searchRunnable)
+                postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+            }
+        }
+    }
+
     companion object{
         const val KEY_FOR_SAVE_TEXT_IN_SEARCH = "KEY_FOR_SAVE_VALUE_IN_SEARCH"
         const val SAVE_TEXT_IN_SEARCH = ""
         const val CURRENT_TRACK = "CURRENT_TRACK"
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
 
         fun createIntent(context: Context, currentTrack: Track): Intent {
             return Intent(context, AudioPlayerActivity::class.java).apply {
