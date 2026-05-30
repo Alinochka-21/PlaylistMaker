@@ -1,8 +1,11 @@
 package com.example.playlistmaker
 
 import android.annotation.SuppressLint
+import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.ImageButton
@@ -15,11 +18,19 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import kotlinx.coroutines.Runnable
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class AudioPlayerActivity : AppCompatActivity() {
     @SuppressLint("CheckResult")
+    private val mediaPlayer = MediaPlayer()
+    lateinit var playTrackButton: ImageButton
+    lateinit var currentTimeTrack: TextView
+    private var playerStatus = STATE_DEFAULT
+    private val handler = Handler(Looper.getMainLooper())
+    var currentRunnableTime = Runnable {  }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -42,6 +53,7 @@ class AudioPlayerActivity : AppCompatActivity() {
                 finish()
             }
         }
+
         val trackConerOnPlayer = findViewById<ImageView>(R.id.trackConerOnPlayer).apply {
             Glide.with(context)
                 .load(currentTrack!!.artworkUrl100.replaceAfterLast('/',"512x512bb.jpg"))
@@ -51,13 +63,40 @@ class AudioPlayerActivity : AppCompatActivity() {
                 .into(this)
         }
 
+        fun prepareMediaPlayer(){
+            mediaPlayer.apply{
+                setDataSource(currentTrack?.previewUrl)
+                prepareAsync()
+                setOnPreparedListener{
+                    playTrackButton.isEnabled = true
+                    playerStatus = STATE_PREPARED
+                    currentTimeTrack.text=DEFAULT_TIME
+                }
+                setOnCompletionListener{
+                    playTrackButton.setImageResource(R.drawable.ic_play_83)
+                    playerStatus = STATE_PREPARED
+                    handler.removeCallbacks (currentRunnableTime)
+                    currentTimeTrack.text = DEFAULT_TIME
+                }
+            }
+        }
+
+        prepareMediaPlayer()
+
+        playTrackButton = findViewById<ImageButton>(R.id.playTrackButton).apply {
+            setOnClickListener {
+                playTrackButtonControl()
+            }
+        }
+
+        currentTimeTrack = findViewById<TextView>(R.id.currentTimeTrack)
+
         val trackNameView = findViewById<TextView>(R.id.trackNameInPlayer).apply {
             text = currentTrack!!.trackName
         }
         val artistName = findViewById<TextView>(R.id.artistNameInPlayer).apply {
             text = currentTrack!!.artistName
         }
-
         val trackTime = findViewById<TextView>(R.id.trackDurationValue).apply {
             text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentTrack!!.trackTimeMillis)
         }
@@ -89,7 +128,60 @@ class AudioPlayerActivity : AppCompatActivity() {
             text = currentTrack!!.country
         }
     }
+
+    override fun onPause() {
+        super.onPause()
+        pauseTrack()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaPlayer.release()
+        handler.removeCallbacks(currentRunnableTime)
+    }
+    private fun playTrack(){
+        mediaPlayer.start()
+        playTrackButton.setImageResource(R.drawable.ic_pause_83)
+        playerStatus = STATE_PLAYING
+        startTimer()
+        handler.postDelayed(currentRunnableTime, 0)
+    }
+
+
+    private fun pauseTrack(){
+        mediaPlayer.pause()
+        playTrackButton.setImageResource(R.drawable.ic_play_83)
+        playerStatus = STATE_PAUSED
+        handler.removeCallbacks (currentRunnableTime)
+    }
+
+    private fun playTrackButtonControl(){
+        when (playerStatus){
+            STATE_PLAYING -> pauseTrack()
+            STATE_PREPARED, STATE_PAUSED -> playTrack()
+        }
+    }
+
+    private fun startTimer(){
+        currentRunnableTime = object : Runnable{
+            override fun run() {
+                currentTimeTrack.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
+                handler.postDelayed(this, 500)
+            }
+        }
+    }
+
     companion object{
         const val CURRENT_TRACK = "CURRENT_TRACK"
+
+        private const val STATE_DEFAULT = 0
+
+        private const val STATE_PREPARED = 1
+
+        private const val STATE_PLAYING = 2
+
+        private const val STATE_PAUSED = 3
+
+        private const val DEFAULT_TIME = "00:00"
     }
 }
