@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.ui.player
 
 import android.annotation.SuppressLint
 import android.media.MediaPlayer
@@ -6,19 +6,19 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.util.TypedValueCompat.dpToPx
+import androidx.core.util.TypedValueCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import kotlinx.coroutines.Runnable
+import com.example.playlistmaker.R
+import com.example.playlistmaker.domen.models.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -59,7 +59,11 @@ class AudioPlayerActivity : AppCompatActivity() {
                 .load(currentTrack!!.artworkUrl100.replaceAfterLast('/',"512x512bb.jpg"))
                 .placeholder(R.drawable.ic_default_45)
                 .error(R.drawable.ic_default_45)
-                .transform(RoundedCorners(dpToPx(8f, this.resources.displayMetrics).toInt()))
+                .transform(
+                    RoundedCorners(
+                        TypedValueCompat.dpToPx(8f, this.resources.displayMetrics).toInt()
+                    )
+                )
                 .into(this)
         }
 
@@ -163,7 +167,7 @@ class AudioPlayerActivity : AppCompatActivity() {
     }
 
     private fun startTimer(){
-        currentRunnableTime = object : Runnable{
+        currentRunnableTime = object : kotlinx.coroutines.Runnable {
             override fun run() {
                 currentTimeTrack.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
                 handler.postDelayed(this, 500)

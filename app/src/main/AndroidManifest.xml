@@ -15,21 +15,21 @@
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.PlaylistMaker">
         <activity
-            android:name=".AudioPlayerActivity"
+            android:name=".ui.player.AudioPlayerActivity"
             android:exported="false" />
         <activity
-            android:name=".Media_library"
+            android:name=".ui.library.MediaLibraryActivity"
             android:exported="false" />
         <activity
-            android:name=".SearchActivity"
+            android:name=".ui.search.SearchActivity"
             android:exported="false"
             android:theme="@style/Base.Theme.PlaylistMaker" />
         <activity
-            android:name=".SettingsActivity"
+            android:name=".ui.settings.SettingsActivity"
             android:exported="false"
             android:theme="@style/Base.Theme.PlaylistMaker" />
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.main.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.OnlyMainDisplay">
             <intent-filter>
