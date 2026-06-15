@@ -8,7 +8,5 @@ interface TrackHistoryRepository {
 
     fun saveHistoryTrackList(tracks: List<Track>)
 
-    fun addTrack(track: Track)
-
     fun clearTrackHistory()
 }

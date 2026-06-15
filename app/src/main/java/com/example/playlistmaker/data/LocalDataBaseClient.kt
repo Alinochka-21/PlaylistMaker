@@ -8,7 +8,5 @@ interface LocalDataBaseClient {
 
     fun saveHistoryTrackDtoList(tracksDto: List<TrackDto>)
 
-    fun addTrackDto(trackDto: TrackDto)
-
     fun clearTrackDtoHistory()
 }

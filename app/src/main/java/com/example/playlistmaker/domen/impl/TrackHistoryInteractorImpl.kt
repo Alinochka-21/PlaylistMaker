@@ -14,10 +14,24 @@ class TrackHistoryInteractorImpl(val historyRepository: TrackHistoryRepository) 
     }
 
     override fun addTrack(track: Track) {
-        historyRepository.addTrack(track)
+        val trackHistory = historyRepository.getHistoryTrackList().toMutableList()
+
+        trackHistory.apply{
+            removeAll{it.trackId == track.trackId}
+            add(0, track)
+        }
+
+        if (trackHistory.size > MAX_TRACK_COUNT){
+            trackHistory.removeAt(trackHistory.size-1)
+        }
+
+       saveTrackList(trackHistory)
     }
 
     override fun clearTrackHistory() {
         historyRepository.clearTrackHistory()
+    }
+    companion object {
+        private const val MAX_TRACK_COUNT = 10
     }
 }

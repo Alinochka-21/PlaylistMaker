@@ -24,26 +24,10 @@ class SharedPrefLocalBaseClient(private val sharedPref: SharedPreferences) : Loc
         }
     }
 
-    override fun addTrackDto(trackDto: TrackDto) {
-        val trackHistory = getHistoryTrackDtoList().toMutableList()
-
-        trackHistory.apply{
-            removeAll{it.trackId == trackDto.trackId}
-            add(0, trackDto)
-        }
-
-        if (trackHistory.size > MAX_TRACK_COUNT){
-            trackHistory.removeAt(trackHistory.size-1)
-        }
-
-        saveHistoryTrackDtoList(trackHistory)
-    }
-
     override fun clearTrackDtoHistory() {
         sharedPref.edit { remove(KEY_TRACK_DTO_HISTORY) }
     }
     companion object {
         private const val KEY_TRACK_DTO_HISTORY = "search_history"
-        private const val MAX_TRACK_COUNT = 10
     }
 }

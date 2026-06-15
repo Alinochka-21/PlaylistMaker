@@ -15,10 +15,6 @@ class TrackHistoryRepositoryImpl(val localDataBaseClient: LocalDataBaseClient): 
         localDataBaseClient.saveHistoryTrackDtoList(tracksDtoList)
     }
 
-    override fun addTrack(track: Track) {
-        localDataBaseClient.addTrackDto(toDto(track))
-    }
-
     override fun clearTrackHistory() {
         localDataBaseClient.clearTrackDtoHistory()
     }
