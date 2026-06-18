@@ -1,16 +1,15 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.ui.main
 
-import android.os.Bundle
-import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
-import android.util.Log
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import com.example.playlistmaker.App
+import com.example.playlistmaker.KEY_DARK_THEME
+import com.example.playlistmaker.ui.library.MediaLibraryActivity
+import com.example.playlistmaker.R
+import com.example.playlistmaker.ui.settings.SettingsActivity
+import com.example.playlistmaker.ui.search.SearchActivity
 import com.google.android.material.button.MaterialButton
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,10 +27,10 @@ class MainActivity : AppCompatActivity() {
             val toSearchDisplay = Intent(this@MainActivity, SearchActivity::class.java)
             startActivity(toSearchDisplay)
         }
-        
+
         val imageLibrary = findViewById<MaterialButton>(R.id.media_library)
         imageLibrary.setOnClickListener {
-            val toMediaLibrary = Intent(this, Media_library::class.java)
+            val toMediaLibrary = Intent(this, MediaLibraryActivity::class.java)
             startActivity(toMediaLibrary)
         }
 

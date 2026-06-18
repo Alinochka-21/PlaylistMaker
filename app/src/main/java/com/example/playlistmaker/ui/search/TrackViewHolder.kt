@@ -1,17 +1,21 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.ui.search
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.util.TypedValueCompat.dpToPx
+import androidx.core.util.TypedValueCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.example.playlistmaker.R
+import com.example.playlistmaker.domen.models.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class TrackViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.track_example,parent,false)){
+class TrackViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
+    LayoutInflater.from(parent.context).inflate(
+        R.layout.track_example,parent,false)){
 
     private val trackName: TextView
     private val artistName: TextView
@@ -34,7 +38,11 @@ class TrackViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(LayoutInflate
             .placeholder(R.drawable.ic_default_45)
             .error(R.drawable.ic_default_45)
             .centerCrop()
-            .transform(RoundedCorners(dpToPx(2f, itemView.resources.displayMetrics).toInt()))
+            .transform(
+                RoundedCorners(
+                    TypedValueCompat.dpToPx(2f, itemView.resources.displayMetrics).toInt()
+                )
+            )
             .into(artworkUrl100)
     }
 }
