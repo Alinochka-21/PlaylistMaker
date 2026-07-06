@@ -1,6 +1,6 @@
-package com.example.playlistmaker.domen.api_local
+package com.example.playlistmaker.search.domain.api_local
 
-import com.example.playlistmaker.domen.models.Track
+import com.example.playlistmaker.search.domain.models.Track
 
 interface TrackHistoryRepository {
 
