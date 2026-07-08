@@ -19,12 +19,9 @@ import com.example.playlistmaker.search.domain.models.Track
 
 class SearchViewModel(private val context: Context) : ViewModel() {
 
-    private val trackHistoryInteractor = Creator.getTrackHistoryInteractor()
     private val tracksInteractor = Creator.getTracksInteractor()
     private val searchHistoryInteractor = Creator.getSearchHistoryInteractor()
-    private var lastSearchedQuery: String = ""
-
-    private var latestSearchText: String? = null
+    private var latestSearchText: String = ""
     private val handler = Handler(Looper.getMainLooper())
 
     private val stateLiveData = MutableLiveData<State>()
@@ -34,7 +31,6 @@ class SearchViewModel(private val context: Context) : ViewModel() {
     fun getTrackEnable(): LiveData<Boolean> = isTrackEnable
 
     private var historyTrackList: ArrayList<Track> = getHistoryTrackList()
-    fun getTrackList(): List<Track> = historyTrackList
 
     fun searchDebounce(textChanged: String){
 
@@ -43,7 +39,6 @@ class SearchViewModel(private val context: Context) : ViewModel() {
         }
 
         latestSearchText = textChanged
-        lastSearchedQuery = textChanged
 
         handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
         val searchRunnable = Runnable {performSearch(textChanged)}
@@ -56,9 +51,11 @@ class SearchViewModel(private val context: Context) : ViewModel() {
     fun performSearch(newSearchText: String){
 
         if (newSearchText.isNotEmpty()) {
-            postState(State.Loading())
 
-         //   latestSearchText = newSearchText
+            latestSearchText = newSearchText
+            handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
+
+            postState(State.Loading())
 
             tracksInteractor.searchTracks(newSearchText, object : TrackInteractor.TrackConsumer {
 
@@ -86,6 +83,7 @@ class SearchViewModel(private val context: Context) : ViewModel() {
     }
 
     fun setBeginningState(){
+        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
 
         if (historyTrackList.isEmpty) {
             postState(
@@ -99,8 +97,8 @@ class SearchViewModel(private val context: Context) : ViewModel() {
     }
 
     fun retryLastRequest(){
-        if (lastSearchedQuery.isNotEmpty()){
-            performSearch(lastSearchedQuery)
+        if (latestSearchText.isNotEmpty()){
+            performSearch(latestSearchText)
         }
     }
 
@@ -126,10 +124,11 @@ class SearchViewModel(private val context: Context) : ViewModel() {
 
     fun addHistoryTrackList(track: Track){
         searchHistoryInteractor.addTrack(track)
+        historyTrackList = ArrayList(searchHistoryInteractor.getTrackList())
     }
 
     fun getHistoryTrackList(): ArrayList<Track> {
-        historyTrackList = trackHistoryInteractor.getTrackList() as ArrayList<Track>
+        historyTrackList = ArrayList(searchHistoryInteractor.getTrackList())
         return  historyTrackList
     }
 

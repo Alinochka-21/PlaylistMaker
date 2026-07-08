@@ -3,10 +3,8 @@ package com.example.playlistmaker.creator
 import android.content.Context
 import android.content.SharedPreferences
 import com.example.playlistmaker.App
-import com.example.playlistmaker.settings.data.SettingsRepositoryImpl
-import com.example.playlistmaker.search.data.repository_impl.TrackHistoryRepositoryImpl
+import com.example.playlistmaker.settings.data.repositoryImpl.SettingsRepositoryImpl
 import com.example.playlistmaker.search.data.repository_impl.TrackRepositoryImpl
-import com.example.playlistmaker.search.data.local_data_source.SharedPrefLocalBaseClient
 import com.example.playlistmaker.search.data.network.RetrofitNetworkClient
 import com.example.playlistmaker.search.data.repository_impl.SearchHistoryRepositoryImpl
 import com.example.playlistmaker.search.data.storage.PrefsStorageClient
@@ -16,13 +14,14 @@ import com.example.playlistmaker.search.domain.api.TrackInteractor
 import com.example.playlistmaker.search.domain.api.TracksRepository
 import com.example.playlistmaker.settings.domain.api_local.SettingsInteractor
 import com.example.playlistmaker.settings.domain.api_local.SettingsRepository
-import com.example.playlistmaker.search.domain.api_local.TrackHistoryInteractor
-import com.example.playlistmaker.search.domain.api_local.TrackHistoryRepository
 import com.example.playlistmaker.search.domain.impl.SearchHistoryInteractorImpl
 import com.example.playlistmaker.settings.domain.impl.SettingsInteractorImpl
-import com.example.playlistmaker.search.domain.impl.TrackHistoryInteractorImpl
 import com.example.playlistmaker.search.domain.impl.TracksInteractorImpl
 import com.example.playlistmaker.search.domain.models.Track
+import com.example.playlistmaker.sharing.data.impl.ExternalNavigatorImpl
+import com.example.playlistmaker.sharing.data.navigator.ExternalNavigator
+import com.example.playlistmaker.sharing.domain.impl.SharingInteractorImpl
+import com.example.playlistmaker.sharing.domain.interactor.SharingInteractor
 import com.google.gson.reflect.TypeToken
 
 object Creator {
@@ -38,14 +37,6 @@ object Creator {
         return TracksInteractorImpl(getTracksRepository())
     }
 
-    fun getTrackHistoryRepository(): TrackHistoryRepository {
-        return TrackHistoryRepositoryImpl(SharedPrefLocalBaseClient(getSharedPreferences()))
-    }
-
-    fun getTrackHistoryInteractor(): TrackHistoryInteractor {
-        return TrackHistoryInteractorImpl(getTrackHistoryRepository())
-    }
-
     private fun getSettingsRepository(): SettingsRepository {
         return SettingsRepositoryImpl(getSharedPreferences())
     }
@@ -54,7 +45,13 @@ object Creator {
         return SettingsInteractorImpl(getSettingsRepository())
     }
 
-    ////
+    fun getExternalNavigator(context: Context): ExternalNavigator {
+       return ExternalNavigatorImpl(context)
+    }
+    fun getSharingInteractor(context: Context): SharingInteractor {
+        val navigator = getExternalNavigator(context)
+        return SharingInteractorImpl(navigator, context)
+    }
     private fun getSearchHistoryRepository(): SearchHistoryRepository = SearchHistoryRepositoryImpl(
         PrefsStorageClient<List<Track>>(
             getSharedPreferences(),

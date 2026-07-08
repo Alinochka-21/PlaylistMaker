@@ -8,7 +8,7 @@ import com.example.playlistmaker.search.ui.activity.TrackViewHolder
 class TrackAdapter(private var tracks: List<Track>, private val onItemClick: (Track) -> Unit): RecyclerView.Adapter<TrackViewHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
-        return TrackViewHolder(parent)
+        return TrackViewHolder.from(parent)
     }
 
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {

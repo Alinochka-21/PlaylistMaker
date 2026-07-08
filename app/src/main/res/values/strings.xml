@@ -4,6 +4,7 @@
     <string name="search">Поиск</string>
     <string name="media_library">Медиатека</string>
     <string name="settings">Настройки</string>
+
     <string name="arrow">Стрелка</string>
     <string name="theme">Темная тема</string>
     <string name="share_app">Поделиться приложением</string>
@@ -14,6 +15,7 @@
     <string name="title_of_mail">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
     <string name="content_of_mail">Спасибо разработчикам и разработчицам за крутое приложение!</string>
     <string name="agreement_of_website">https://yandex.ru/legal/practicum_offer/ru/</string>
+
     <string name="track_name">Имя Трека</string>
     <string name="artist_name">Имя Артиста</string>
     <string name="track_time">Длительность трека</string>

@@ -7,56 +7,74 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.util.TypedValueCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
+import com.example.playlistmaker.databinding.ActivityAudioPlayerBinding
+import com.example.playlistmaker.player.ui.view_model.AudioPlayerViewModel
+import com.example.playlistmaker.player.ui.view_model.AudioPlayerViewModel.Companion.STATE_DEFAULT
+import com.example.playlistmaker.player.ui.view_model.AudioPlayerViewModel.Companion.STATE_PLAYING
 import com.example.playlistmaker.search.domain.models.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class AudioPlayerActivity : AppCompatActivity() {
+    private var viewModel: AudioPlayerViewModel? = null
+    private lateinit var viewBiding: ActivityAudioPlayerBinding
     @SuppressLint("CheckResult")
     private val mediaPlayer = MediaPlayer()
-    lateinit var playTrackButton: ImageButton
-    lateinit var currentTimeTrack: TextView
-    private var playerStatus = STATE_DEFAULT
     private val handler = Handler(Looper.getMainLooper())
-    var currentRunnableTime = Runnable {  }
+    var currentRunnableTime = Runnable { }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewBiding = ActivityAudioPlayerBinding.inflate(layoutInflater)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_audio_player)
+        setContentView(viewBiding.root)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.audioPlayer)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        val currentTrack = if (Build.VERSION.SDK_INT >= 33){
+        val currentTrack = if (Build.VERSION.SDK_INT >= 33) {
             intent.getParcelableExtra(CURRENT_TRACK, Track::class.java)
         } else {
             @Suppress("DEPRECATION")
             intent.getParcelableExtra(CURRENT_TRACK) as? Track
         }
 
-        val backButtonInPlayer = findViewById<ImageButton>(R.id.backButtonInPlayer).apply {
-            setOnClickListener {
-                finish()
-            }
+        viewModel = ViewModelProvider(
+            this,
+            AudioPlayerViewModel.getFactory(
+                currentTrack!!.previewUrl
+            )
+        ).get (
+            AudioPlayerViewModel::class.java
+        )
+
+        viewModel?.getTimer()?.observe(this) {
+            viewBiding.currentTimeTrack.text = it
         }
 
-        val trackConerOnPlayer = findViewById<ImageView>(R.id.trackConerOnPlayer).apply {
+        viewModel?.getPlayerStatus()?.observe(this) {
+            playOrPause(it == STATE_PLAYING)
+            canPressOnButton(it != STATE_DEFAULT)
+        }
+
+        viewBiding.backButtonInPlayer.setOnClickListener {
+            finish()
+        }
+
+        viewBiding.trackConerOnPlayer.apply {
             Glide.with(context)
-                .load(currentTrack!!.artworkUrl100.replaceAfterLast('/',"512x512bb.jpg"))
+                .load(currentTrack.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"))
                 .placeholder(R.drawable.ic_default_45)
                 .error(R.drawable.ic_default_45)
                 .transform(
@@ -67,75 +85,41 @@ class AudioPlayerActivity : AppCompatActivity() {
                 .into(this)
         }
 
-        fun prepareMediaPlayer(){
-            mediaPlayer.apply{
-                setDataSource(currentTrack?.previewUrl)
-                prepareAsync()
-                setOnPreparedListener{
-                    playTrackButton.isEnabled = true
-                    playerStatus = STATE_PREPARED
-                    currentTimeTrack.text=DEFAULT_TIME
-                }
-                setOnCompletionListener{
-                    playTrackButton.setImageResource(R.drawable.ic_play_83)
-                    playerStatus = STATE_PREPARED
-                    handler.removeCallbacks (currentRunnableTime)
-                    currentTimeTrack.text = DEFAULT_TIME
-                }
-            }
+
+        viewBiding.playTrackButton.setOnClickListener {
+            viewModel?.playButtonControl()
         }
 
-        prepareMediaPlayer()
+        viewBiding.trackDurationValue.text =
+            SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentTrack!!.trackTimeMillis)
 
-        playTrackButton = findViewById<ImageButton>(R.id.playTrackButton).apply {
-            setOnClickListener {
-                playTrackButtonControl()
-            }
-        }
-
-        currentTimeTrack = findViewById<TextView>(R.id.currentTimeTrack)
-
-        val trackNameView = findViewById<TextView>(R.id.trackNameInPlayer).apply {
-            text = currentTrack!!.trackName
-        }
-        val artistName = findViewById<TextView>(R.id.artistNameInPlayer).apply {
-            text = currentTrack!!.artistName
-        }
-        val trackTime = findViewById<TextView>(R.id.trackDurationValue).apply {
-            text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentTrack!!.trackTimeMillis)
-        }
-
-        val trackCollection = findViewById<TextView>(R.id.trackAlbum)
-        val trackCollectionName = findViewById<TextView>(R.id.trackAlbumValue).apply {
-            if(!currentTrack!!.collectionName.isNullOrEmpty()) {
+        viewBiding.trackAlbumValue.apply {
+            if (!currentTrack.collectionName.isNullOrEmpty()) {
                 text = currentTrack.collectionName
-            } else{
+            } else {
                 visibility = View.GONE
-                trackCollection.visibility = View.GONE
+                viewBiding.trackAlbum.visibility = View.GONE
             }
         }
 
-        val trackYear = findViewById<TextView>(R.id.trackYear)
-        val trackYearValue = findViewById<TextView>(R.id.trackYearValue).apply {
-            if (!currentTrack!!.releaseDate.isNullOrEmpty()){
+        viewBiding.trackYearValue.apply {
+            if (!currentTrack.releaseDate.isNullOrEmpty()) {
                 text = currentTrack.releaseDate.take(4)
-            }
-            else {
+            } else {
                 visibility = View.GONE
-                trackYear.visibility = View.GONE
+                viewBiding.trackYear.visibility = View.GONE
             }
         }
-        val trackGenreName = findViewById<TextView>(R.id.trackGenreValue).apply {
-            text = currentTrack!!.primaryGenreName
-        }
-        val trackCountry = findViewById<TextView>(R.id.trackCountryValue).apply {
-            text = currentTrack!!.country
-        }
+
+        viewBiding.trackNameInPlayer.text = currentTrack.trackName
+        viewBiding.artistNameInPlayer.text = currentTrack.artistName
+        viewBiding.trackGenreValue.text = currentTrack.primaryGenreName
+        viewBiding.trackCountryValue.text = currentTrack.country
     }
 
     override fun onPause() {
         super.onPause()
-        pauseTrack()
+        viewModel?.onPause()
     }
 
     override fun onDestroy() {
@@ -143,49 +127,20 @@ class AudioPlayerActivity : AppCompatActivity() {
         mediaPlayer.release()
         handler.removeCallbacks(currentRunnableTime)
     }
-    private fun playTrack(){
-        mediaPlayer.start()
-        playTrackButton.setImageResource(R.drawable.ic_pause_83)
-        playerStatus = STATE_PLAYING
-        startTimer()
-        handler.postDelayed(currentRunnableTime, 0)
-    }
 
-
-    private fun pauseTrack(){
-        mediaPlayer.pause()
-        playTrackButton.setImageResource(R.drawable.ic_play_83)
-        playerStatus = STATE_PAUSED
-        handler.removeCallbacks (currentRunnableTime)
-    }
-
-    private fun playTrackButtonControl(){
-        when (playerStatus){
-            STATE_PLAYING -> pauseTrack()
-            STATE_PREPARED, STATE_PAUSED -> playTrack()
+    private fun playOrPause(play: Boolean) {
+        if (play) {
+            viewBiding.playTrackButton.setImageResource(R.drawable.ic_pause_83)
+        } else {
+            viewBiding.playTrackButton.setImageResource(R.drawable.ic_play_83)
         }
     }
 
-    private fun startTimer(){
-        currentRunnableTime = object : kotlinx.coroutines.Runnable {
-            override fun run() {
-                currentTimeTrack.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
-                handler.postDelayed(this, 500)
-            }
-        }
+    private fun canPressOnButton(canPress: Boolean){
+        viewBiding.playTrackButton.isEnabled = canPress
     }
 
-    companion object{
-        const val CURRENT_TRACK = "CURRENT_TRACK"
-
-        private const val STATE_DEFAULT = 0
-
-        private const val STATE_PREPARED = 1
-
-        private const val STATE_PLAYING = 2
-
-        private const val STATE_PAUSED = 3
-
-        private const val DEFAULT_TIME = "00:00"
+    companion object {
+       private const val CURRENT_TRACK = "CURRENT_TRACK"
     }
 }

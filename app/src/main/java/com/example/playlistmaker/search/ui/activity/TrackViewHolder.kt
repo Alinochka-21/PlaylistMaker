@@ -9,30 +9,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
+import com.example.playlistmaker.databinding.TrackExampleBinding
 import com.example.playlistmaker.search.domain.models.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class TrackViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
-    LayoutInflater.from(parent.context).inflate(
-        R.layout.track_example,parent,false)){
-
-    private val trackName: TextView
-    private val artistName: TextView
-    private val trackTime: TextView
-    private val artworkUrl100: ImageView
-
-    init {
-        trackName = itemView.findViewById(R.id.trackName)
-        artistName = itemView.findViewById(R.id.artistName)
-        trackTime = itemView.findViewById(R.id.trackTime)
-        artworkUrl100 = itemView.findViewById(R.id.artworkUrl100)
-    }
+class TrackViewHolder(private val binding: TrackExampleBinding) :
+    RecyclerView.ViewHolder(binding.root) {
 
     fun bind(track: Track){
-        trackName.text = track.trackName
-        artistName.text = track.artistName
-        trackTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis)
+        binding.trackName.text = track.trackName
+        binding.artistName.text = track.artistName
+        binding.trackTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis)
         Glide.with(itemView)
             .load(track.artworkUrl100)
             .placeholder(R.drawable.ic_default_45)
@@ -43,6 +31,13 @@ class TrackViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
                     TypedValueCompat.dpToPx(2f, itemView.resources.displayMetrics).toInt()
                 )
             )
-            .into(artworkUrl100)
+            .into(binding.artworkUrl100)
+    }
+    companion object{
+        fun from(parent: ViewGroup): TrackViewHolder {
+            val inflater = LayoutInflater.from(parent.context)
+            val binding = TrackExampleBinding.inflate(inflater,parent,false)
+            return TrackViewHolder(binding)
+        }
     }
 }
