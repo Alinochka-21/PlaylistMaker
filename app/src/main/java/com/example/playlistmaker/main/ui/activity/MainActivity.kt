@@ -6,22 +6,20 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.ViewModelProvider
 import com.example.playlistmaker.App
-import com.example.playlistmaker.KEY_DARK_THEME
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityMainBinding
 import com.example.playlistmaker.search.ui.activity.SearchActivity
 import com.example.playlistmaker.settings.ui.activity.SettingsActivity
 import com.example.playlistmaker.library.ui.activity.MediaLibraryActivity
-import com.google.android.material.button.MaterialButton
+import com.example.playlistmaker.main.ui.view_model.MainViewModel
 
 class MainActivity : AppCompatActivity() {
     private lateinit var viewBiding: ActivityMainBinding
+    private var viewModel: MainViewModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val sharedPref = getSharedPreferences("app_prefs", MODE_PRIVATE)
-        val isDarkTheme = sharedPref.getBoolean(KEY_DARK_THEME,true)
-        (applicationContext as App).switchTheme(isDarkTheme)
 
         super.onCreate(savedInstanceState)
         viewBiding = ActivityMainBinding.inflate(layoutInflater)
@@ -31,6 +29,13 @@ class MainActivity : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+
+        viewModel = ViewModelProvider(this, MainViewModel.getMainViewModelFactory()).get(
+            MainViewModel::class.java)
+
+        viewModel?.getLiveTheme()?.observe(this) {
+            (applicationContext as App).switchTheme(it)
         }
 
         viewBiding.search.setOnClickListener{
@@ -47,5 +52,10 @@ class MainActivity : AppCompatActivity() {
             val toSettingsDisplay = Intent(this, SettingsActivity::class.java)
             startActivity(toSettingsDisplay)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel?.getThemeMode()
     }
 }
