@@ -34,7 +34,7 @@ class TrackRepositoryImpl(private val netWorkClient: NetWorkClient) : TracksRepo
                 return SearchResult.Error(response.resultCode, "Код не 200")
             }
         } catch (e: Exception){
-           return SearchResult.Error(-1, "Запрос не дошел до сервера. Проблема с Итернетом")
+            return SearchResult.Error(-1, "Запрос не дошел до сервера. Проблема с Итернетом")
         }
     }
 }

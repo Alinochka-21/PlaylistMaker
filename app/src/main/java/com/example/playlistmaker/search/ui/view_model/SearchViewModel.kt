@@ -60,21 +60,25 @@ class SearchViewModel(private val context: Context) : ViewModel() {
             tracksInteractor.searchTracks(newSearchText, object : TrackInteractor.TrackConsumer {
 
                 override fun onSuccess(tracks: List<Track>) {
-                    if (tracks.isNotEmpty()) {
-                        postState(
-                            State.Content(tracks)
-                        )
-                    } else {
-                        postState(
-                            State.Empty(context.getString(R.string.not_found))
-                        )
+                    handler.post {
+                        if (tracks.isNotEmpty()) {
+                            postState(
+                                State.Content(tracks)
+                            )
+                        } else {
+                            postState(
+                                State.Empty(context.getString(R.string.not_found))
+                            )
+                        }
                     }
                 }
 
                 override fun onFailure(errorCode: Int, message: String) {
-                    postState(
-                        State.Error(context.getString(R.string.not_internet))
-                    )
+                    handler.post {
+                        postState(
+                            State.Error(context.getString(R.string.not_internet))
+                        )
+                    }
                 }
             })
         } else {
