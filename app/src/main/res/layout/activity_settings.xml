@@ -4,25 +4,24 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:layout_marginHorizontal="16dp"
     android:id="@+id/main"
     >
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:orientation="horizontal"
         android:layout_marginBottom="24dp"
-        android:layout_marginStart="-16dp">
+        android:layout_marginEnd="16dp"
+        >
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/backButton"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="5"
         android:layout_marginTop="4dp"
         android:layout_marginStart="4dp"
         android:layout_marginEnd="4dp"
-        android:id="@+id/back"
         style="@style/Widget.MaterialComponents.Button.TextButton"
 
         app:icon="@drawable/ic_arrow_back_24"
@@ -46,8 +45,8 @@
             />
     </LinearLayout>
 
-    
     <FrameLayout
+        android:layout_marginHorizontal="16dp"
         style="@style/FrameLayoutStyleInSettings">
 
         <TextView
@@ -62,12 +61,14 @@
             android:layout_gravity="end"
             android:layout_marginTop="10dp"
             app:trackTint="?attr/colorSecondaryVariant"
-            app:thumbTint="?attr/colorOnPrimary"/>
+            app:thumbTint="?attr/colorOnPrimary"
+            />
     </FrameLayout>
 
     <FrameLayout
+        android:layout_marginHorizontal="16dp"
         style="@style/FrameLayoutStyleInSettings"
-        android:id="@+id/shareAPK"
+        android:id="@+id/shareButton"
         >
 
         <TextView
@@ -81,10 +82,11 @@
              />
     </FrameLayout>
 
-
     <FrameLayout
+        android:layout_marginHorizontal="16dp"
         style="@style/FrameLayoutStyleInSettings"
-        android:id="@+id/support">
+        android:id="@+id/supportButton"
+        >
 
         <TextView
             style="@style/TextViewStyleInSettings"
@@ -98,8 +100,9 @@
     </FrameLayout>
 
     <FrameLayout
+        android:layout_marginHorizontal="16dp"
         style="@style/FrameLayoutStyleInSettings"
-        android:id="@+id/agreement"
+        android:id="@+id/agreementButton"
         >
 
         <TextView
@@ -113,6 +116,4 @@
             android:src="@drawable/ic_arrow_small_24"
             />
     </FrameLayout>
-
-
 </LinearLayout>

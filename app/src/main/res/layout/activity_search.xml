@@ -3,26 +3,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:id="@+id/search_activity"
-    android:layout_marginHorizontal="12dp">
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:orientation="horizontal"
-        android:layout_marginStart="-12dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="12dp"
         android:layout_marginBottom="8dp">
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/backButton"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="5"
             android:layout_marginTop="4dp"
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"
-            android:id="@+id/back"
             style="@style/Widget.MaterialComponents.Button.TextButton"
 
             app:icon="@drawable/ic_arrow_back_24"
@@ -48,7 +48,7 @@
 
     <FrameLayout
         style="@style/FrameLayoutStyleInSettings"
-        android:layout_marginHorizontal="4dp">
+        android:layout_marginHorizontal="16dp">
 
     <EditText
         android:id="@+id/editText"
@@ -71,7 +71,7 @@
         />
 
         <ImageView
-            android:id="@+id/clearIcon"
+            android:id="@+id/buttonClear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
@@ -85,10 +85,11 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="12dp">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerTrackView"
+        android:id="@+id/recyclerSearchTrackView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="16dp"
@@ -97,7 +98,7 @@
         />
         
     <ProgressBar
-        android:id="@+id/progressBarInSearchActivity"
+        android:id="@+id/progressBar"
         android:layout_marginTop="140dp"
         android:layout_width="44dp"
         android:layout_height="44dp"
@@ -127,7 +128,7 @@
    </LinearLayout>
 
    <LinearLayout
-       android:id="@+id/placeholderNotInternet"
+       android:id="@+id/placeholderLayoutNotInternet"
        android:layout_width="match_parent"
        android:layout_height="wrap_content"
        android:orientation="vertical"
@@ -146,7 +147,7 @@
        />
 
    <com.google.android.material.button.MaterialButton
-        android:id="@+id/placeholderErrorButton"
+        android:id="@+id/updateButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -163,7 +164,7 @@
    </LinearLayout>
 
    <LinearLayout
-       android:id="@+id/trackHistory"
+       android:id="@+id/trackHistoryLayout"
        android:layout_width="match_parent"
        android:layout_height="wrap_content"
        android:layout_gravity="center_horizontal"
@@ -183,7 +184,7 @@
            />
        
        <androidx.recyclerview.widget.RecyclerView
-           android:id="@+id/recyclerviewTrackHistory"
+           android:id="@+id/recyclerViewTrackHistory"
            android:layout_width="match_parent"
            android:layout_height="0dp"
            android:layout_weight="1"
@@ -191,7 +192,7 @@
            />
 
        <com.google.android.material.button.MaterialButton
-           android:id="@+id/bottomClearTrackHistory"
+           android:id="@+id/clearHistoryButton"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
            android:layout_marginTop="24dp"

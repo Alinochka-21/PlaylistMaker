@@ -3,7 +3,7 @@ package com.example.playlistmaker
 import android.app.Application
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatDelegate
-import com.example.playlistmaker.data.SettingsRepositoryImpl
+import com.example.playlistmaker.settings.data.repositoryImpl.SettingsRepositoryImpl
 
 const val  KEY_DARK_THEME = "key_dark_theme"
 class App : Application() {
