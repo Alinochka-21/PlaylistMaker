@@ -29,13 +29,13 @@ class SettingsViewModel(
         settingsInteractor.setThemeMode(new)
     }
 
-    fun share(): Intent {
+    fun share() {
         return sharingInteractor.shareApp()
     }
-    fun support(): Intent {
+    fun support() {
         return sharingInteractor.openSupport()
     }
-    fun agreement(): Intent {
+    fun agreement() {
         return sharingInteractor.openTerms()
     }
 

@@ -39,18 +39,18 @@ class SettingsActivity : AppCompatActivity() {
         viewBinding.backButton.setOnClickListener { finish() }
 
         viewBinding.shareButton.setOnClickListener {
-            val intent = viewModel?.share()
-            startActivity(intent)
+            viewModel?.share()
+
         }
 
         viewBinding.supportButton.setOnClickListener {
-            val intent = viewModel?.support()
-            startActivity(intent)
+            viewModel?.support()
+
         }
 
         viewBinding.agreementButton.setOnClickListener {
-            val intent = viewModel?.agreement()
-            startActivity(intent)
+            viewModel?.agreement()
+
         }
     }
     fun initThemeSwitcher(darkTheme: Boolean) {

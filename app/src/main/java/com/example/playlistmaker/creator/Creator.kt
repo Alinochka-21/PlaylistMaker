@@ -50,7 +50,7 @@ object Creator {
     }
     fun getSharingInteractor(context: Context): SharingInteractor {
         val navigator = getExternalNavigator(context)
-        return SharingInteractorImpl(navigator, context)
+        return SharingInteractorImpl(navigator)
     }
     private fun getSearchHistoryRepository(): SearchHistoryRepository = SearchHistoryRepositoryImpl(
         PrefsStorageClient<List<Track>>(
