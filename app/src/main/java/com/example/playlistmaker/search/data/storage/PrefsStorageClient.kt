@@ -8,12 +8,11 @@ import androidx.core.content.edit
 
 
 class PrefsStorageClient<T>(
+    private val gson: Gson,
     private val sharedPref: SharedPreferences,
     private val dataKey: String,
     private val type: Type
 ) : StorageClient<T> {
-
-    private val gson = Gson()
 
     override fun getData(): T? {
         val json = sharedPref.getString(dataKey, null)
@@ -31,9 +30,5 @@ class PrefsStorageClient<T>(
 
     override fun clearData() {
         sharedPref.edit { remove(dataKey) }
-    }
-
-    companion object {
-        private const val KEY_TRACK_HISTORY = "search_history"
     }
 }
