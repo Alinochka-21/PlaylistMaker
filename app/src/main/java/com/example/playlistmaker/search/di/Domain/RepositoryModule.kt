@@ -8,11 +8,11 @@ import org.koin.dsl.module
 
 val repositoryModule = module {
 
-    single <TracksRepository> {
+    factory <TracksRepository> {
         TrackRepositoryImpl(get())
     }
 
-    single <SearchHistoryRepository > {
+    factory <SearchHistoryRepository > {
         SearchHistoryRepositoryImpl(get())
     }
 }

@@ -26,16 +26,16 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class AudioPlayerActivity : AppCompatActivity() {
-    private val lazyCurrentTrack: Track? by lazy {
+    private val lazyCurrentTrack: Track by lazy {
         if (Build.VERSION.SDK_INT >= 33) {
-            intent.getParcelableExtra(CURRENT_TRACK, Track::class.java)
+            requireNotNull(intent.getParcelableExtra(CURRENT_TRACK, Track::class.java))
         } else {
             @Suppress("DEPRECATION")
-            intent.getParcelableExtra(CURRENT_TRACK) as? Track
+            requireNotNull(intent.getParcelableExtra(CURRENT_TRACK) as? Track)
         }
     }
     val viewModel: AudioPlayerViewModel by viewModel {
-        parametersOf(lazyCurrentTrack!!.previewUrl)
+        parametersOf(lazyCurrentTrack.previewUrl)
     }
     private lateinit var viewBiding: ActivityAudioPlayerBinding
     @SuppressLint("CheckResult")
