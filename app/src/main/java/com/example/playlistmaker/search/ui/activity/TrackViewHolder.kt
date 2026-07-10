@@ -2,8 +2,6 @@ package com.example.playlistmaker.search.ui.activity
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.core.util.TypedValueCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -16,11 +14,12 @@ import java.util.Locale
 
 class TrackViewHolder(private val binding: TrackExampleBinding) :
     RecyclerView.ViewHolder(binding.root) {
+    private val dateFormat by lazy { SimpleDateFormat("mm:ss", Locale.getDefault()) }
 
     fun bind(track: Track){
         binding.trackName.text = track.trackName
         binding.artistName.text = track.artistName
-        binding.trackTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis)
+        binding.trackTime.text = dateFormat.format(track.trackTimeMillis)
         Glide.with(itemView)
             .load(track.artworkUrl100)
             .placeholder(R.drawable.ic_default_45)

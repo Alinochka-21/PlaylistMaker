@@ -12,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.util.TypedValueCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
@@ -21,11 +20,23 @@ import com.example.playlistmaker.player.ui.view_model.AudioPlayerViewModel
 import com.example.playlistmaker.player.ui.view_model.AudioPlayerViewModel.Companion.STATE_DEFAULT
 import com.example.playlistmaker.player.ui.view_model.AudioPlayerViewModel.Companion.STATE_PLAYING
 import com.example.playlistmaker.search.domain.models.Track
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class AudioPlayerActivity : AppCompatActivity() {
-    private var viewModel: AudioPlayerViewModel? = null
+    private val lazyCurrentTrack: Track? by lazy {
+        if (Build.VERSION.SDK_INT >= 33) {
+            intent.getParcelableExtra(CURRENT_TRACK, Track::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra(CURRENT_TRACK) as? Track
+        }
+    }
+    val viewModel: AudioPlayerViewModel by viewModel {
+        parametersOf(lazyCurrentTrack!!.previewUrl)
+    }
     private lateinit var viewBiding: ActivityAudioPlayerBinding
     @SuppressLint("CheckResult")
     private val mediaPlayer = MediaPlayer()
@@ -43,27 +54,17 @@ class AudioPlayerActivity : AppCompatActivity() {
             insets
         }
 
-        val currentTrack = if (Build.VERSION.SDK_INT >= 33) {
-            intent.getParcelableExtra(CURRENT_TRACK, Track::class.java)
-        } else {
-            @Suppress("DEPRECATION")
-            intent.getParcelableExtra(CURRENT_TRACK) as? Track
-        }
+        val currentTrack = lazyCurrentTrack
 
-        viewModel = ViewModelProvider(
-            this,
-            AudioPlayerViewModel.getFactory(
-                currentTrack!!.previewUrl
-            )
-        ).get (
-            AudioPlayerViewModel::class.java
-        )
+         val viewModel: AudioPlayerViewModel by viewModel() {
+             parametersOf(currentTrack!!.previewUrl)
+         }
 
-        viewModel?.getTimer()?.observe(this) {
+        viewModel.getTimer().observe(this) {
             viewBiding.currentTimeTrack.text = it
         }
 
-        viewModel?.getPlayerStatus()?.observe(this) {
+        viewModel.getPlayerStatus().observe(this) {
             playOrPause(it == STATE_PLAYING)
             canPressOnButton(it != STATE_DEFAULT)
         }
@@ -74,7 +75,7 @@ class AudioPlayerActivity : AppCompatActivity() {
 
         viewBiding.trackConerOnPlayer.apply {
             Glide.with(context)
-                .load(currentTrack.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"))
+                .load(currentTrack!!.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"))
                 .placeholder(R.drawable.ic_default_45)
                 .error(R.drawable.ic_default_45)
                 .transform(
@@ -87,7 +88,7 @@ class AudioPlayerActivity : AppCompatActivity() {
 
 
         viewBiding.playTrackButton.setOnClickListener {
-            viewModel?.playButtonControl()
+            viewModel.playButtonControl()
         }
 
         viewBiding.trackDurationValue.text =
@@ -119,7 +120,7 @@ class AudioPlayerActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        viewModel?.onPause()
+        viewModel.onPause()
     }
 
     override fun onDestroy() {

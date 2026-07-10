@@ -1,9 +1,21 @@
 package com.example.playlistmaker
 
 import android.app.Application
-import android.os.Bundle
 import androidx.appcompat.app.AppCompatDelegate
+import com.example.playlistmaker.main.ui.di.mainViewModelModule
+import com.example.playlistmaker.player.di.playerViewModelModule
+import com.example.playlistmaker.search.di.Domain.interactorModule
+import com.example.playlistmaker.search.di.Domain.repositoryModule
+import com.example.playlistmaker.search.di.searchDataModule
+import com.example.playlistmaker.search.di.searchViewModelModule
 import com.example.playlistmaker.settings.data.repositoryImpl.SettingsRepositoryImpl
+import com.example.playlistmaker.settings.di.domain.interactor.settingsInteractorModule
+import com.example.playlistmaker.settings.di.domain.repository.settingsRepositoryModule
+import com.example.playlistmaker.settings.di.viewModel.settingsViewModelModule
+import com.example.playlistmaker.sharing.di.sharingInteractorModule
+import com.example.playlistmaker.sharing.di.sharingDataModule
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.GlobalContext.startKoin
 
 const val  KEY_DARK_THEME = "key_dark_theme"
 class App : Application() {
@@ -11,10 +23,24 @@ class App : Application() {
 
     override fun onCreate(){
         super.onCreate()
+        startKoin {
+            androidContext(this@App)
+            modules(
+                searchViewModelModule,
+                repositoryModule,
+                interactorModule,
+                searchDataModule,
+                playerViewModelModule,
+                sharingDataModule,
+                settingsRepositoryModule,
+                settingsInteractorModule,
+                sharingInteractorModule,
+                settingsViewModelModule,
+                mainViewModelModule
+            )
+        }
         instance = this
-
-        val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
-        val repository = SettingsRepositoryImpl(prefs)
+        val repository = SettingsRepositoryImpl(this)
         darkTheme = repository.getThemeMode()
     }
 

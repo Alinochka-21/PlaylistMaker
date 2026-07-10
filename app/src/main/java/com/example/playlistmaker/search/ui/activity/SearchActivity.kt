@@ -3,22 +3,16 @@ package com.example.playlistmaker.search.ui.activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ProgressBar
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
-import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivitySearchBinding
 import com.example.playlistmaker.search.domain.models.Track
@@ -26,11 +20,11 @@ import com.example.playlistmaker.main.ui.activity.MainActivity
 import com.example.playlistmaker.player.ui.activity.AudioPlayerActivity
 import com.example.playlistmaker.search.ui.view_model.SearchViewModel
 import com.example.playlistmaker.search.ui.view_model.State
-import com.google.android.material.button.MaterialButton
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
+    private val viewModel: SearchViewModel by viewModel()
     private lateinit var viewBiding: ActivitySearchBinding
-    private var viewModel: SearchViewModel? = null
     private var savedText: String = ""
     private var canPress : Boolean = true
     private lateinit var searchAdapter: TrackAdapter
@@ -48,12 +42,7 @@ class SearchActivity : AppCompatActivity() {
             insets
         }
 
-        viewModel = ViewModelProvider(
-            this,
-            SearchViewModel.getSearchFactory()
-        ).get(SearchViewModel::class.java)
-
-        viewModel?.getTrackEnable()?.observe(this) {
+        viewModel.getTrackEnable().observe(this) {
             canPress = it
         }
 
@@ -63,15 +52,15 @@ class SearchActivity : AppCompatActivity() {
         historyAdapter =
             TrackAdapter(emptyList()) { track ->
                 if (canPress) {
-                    viewModel?.clickDebounce()
+                    viewModel.clickDebounce()
                     startActivity(createIntent(this, track))
                 }
             }
 
         searchAdapter = TrackAdapter(emptyList()) { track ->
             if (canPress) {
-                viewModel?.clickDebounce()
-                viewModel?.addHistoryTrackList(track)
+                viewModel.clickDebounce()
+                viewModel.addHistoryTrackList(track)
                 startActivity(createIntent(this, track))
             }
         }
@@ -80,11 +69,11 @@ class SearchActivity : AppCompatActivity() {
         viewBiding.recyclerViewTrackHistory.adapter = historyAdapter
 
         viewBiding.clearHistoryButton.setOnClickListener {
-            viewModel?.clearHistoryTrackList()
+            viewModel.clearHistoryTrackList()
         }
 
         viewBiding.updateButton.setOnClickListener {
-                viewModel?.retryLastRequest()
+                viewModel.retryLastRequest()
         }
 
         viewBiding.backButton.setOnClickListener {
@@ -96,7 +85,7 @@ class SearchActivity : AppCompatActivity() {
         val buttonClear = findViewById<ImageView>(R.id.buttonClear).apply {
             setOnClickListener {
                 viewBiding.editText.setText("")
-                viewModel?.setBeginningState()
+                viewModel.setBeginningState()
                 val inputMethodManager =
                     getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                 inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
@@ -104,19 +93,19 @@ class SearchActivity : AppCompatActivity() {
         }
 
         viewBiding.editText.setOnFocusChangeListener { view, hasFocus ->
-            viewModel?.onFocusChanged(hasFocus, viewBiding.editText.text.toString())
+            viewModel.onFocusChanged(hasFocus, viewBiding.editText.text.toString())
         }
 
         viewBiding.editText.doOnTextChanged { s, _, _, _ ->
             buttonClear.visibility = clearButtonVisibility(s)
 
             if (s.toString().isNotEmpty()) {
-                viewModel?.searchDebounce(
+                viewModel.searchDebounce(
                     textChanged = s?.toString() ?: ""
                 )
             }
             else {
-                viewModel?.setBeginningState()
+                viewModel.setBeginningState()
             }
             savedText = s?.toString() ?: ""
 
@@ -124,13 +113,13 @@ class SearchActivity : AppCompatActivity() {
 
         viewBiding.editText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                viewModel?.performSearch(viewBiding.editText.text.toString().trim().lowercase())
+                viewModel.performSearch(viewBiding.editText.text.toString().trim().lowercase())
                 true
             }
             false
         }
 
-        viewModel?.getStateLiveData()?.observe(this) {
+        viewModel.getStateLiveData().observe(this) {
             render(it)
         }
     }
@@ -153,9 +142,9 @@ class SearchActivity : AppCompatActivity() {
         savedText = fromBundle.getString(KEY_FOR_SAVE_TEXT_IN_SEARCH,SAVE_TEXT_IN_SEARCH)
         viewBiding.editText.setText(savedText)
         if (savedText.isNotEmpty()) {
-            viewModel?.searchDebounce(savedText)
+            viewModel.searchDebounce(savedText)
         } else {
-            viewModel?.setBeginningState()
+            viewModel.setBeginningState()
         }
     }
 

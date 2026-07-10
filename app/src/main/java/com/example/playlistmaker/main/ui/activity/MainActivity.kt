@@ -6,18 +6,18 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.ViewModelProvider
 import com.example.playlistmaker.App
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityMainBinding
-import com.example.playlistmaker.search.ui.activity.SearchActivity
-import com.example.playlistmaker.settings.ui.activity.SettingsActivity
 import com.example.playlistmaker.library.ui.activity.MediaLibraryActivity
 import com.example.playlistmaker.main.ui.view_model.MainViewModel
+import com.example.playlistmaker.search.ui.activity.SearchActivity
+import com.example.playlistmaker.settings.ui.activity.SettingsActivity
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
     private lateinit var viewBiding: ActivityMainBinding
-    private var viewModel: MainViewModel? = null
+    private val viewModel: MainViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -30,9 +30,6 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
-        viewModel = ViewModelProvider(this, MainViewModel.getMainViewModelFactory()).get(
-            MainViewModel::class.java)
 
         viewModel?.getLiveTheme()?.observe(this) {
             (applicationContext as App).switchTheme(it)
