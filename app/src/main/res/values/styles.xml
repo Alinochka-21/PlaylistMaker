@@ -78,7 +78,7 @@
         <item name="android:layout_height">120dp</item>
         <item name="android:layout_marginBottom">16dp</item>
         <item name="android:layout_gravity">center_horizontal</item>
-        <item name="android:src">@drawable/img_sad_emodji_light_120</item>
+        <item name="android:src">@drawable/img_sad_emoji_light_120</item>
     </style>
     <style name="placeholderImgNotInternet">
         <item name="android:layout_width">120dp</item>
@@ -121,6 +121,12 @@
     <style name="roundButtonInPlayer">
         <item name="android:backgroundTint">@color/YP_Dark_Gray</item>
         <item name="android:tint">@color/YP_White</item>
+    </style>
+
+    <style name="tableText">
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textFontWeight">500</item>
     </style>
 
 </resources>
