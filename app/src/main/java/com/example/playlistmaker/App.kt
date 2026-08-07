@@ -2,6 +2,8 @@ package com.example.playlistmaker
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
+import com.example.playlistmaker.library.di.playlistsViewModelModule
+import com.example.playlistmaker.library.di.selectedTracksViewModelModule
 import com.example.playlistmaker.main.ui.di.mainViewModelModule
 import com.example.playlistmaker.player.di.playerViewModelModule
 import com.example.playlistmaker.search.di.Domain.interactorModule
@@ -36,7 +38,9 @@ class App : Application() {
                 settingsInteractorModule,
                 sharingInteractorModule,
                 settingsViewModelModule,
-                mainViewModelModule
+                mainViewModelModule,
+                selectedTracksViewModelModule,
+                playlistsViewModelModule
             )
         }
         instance = this
