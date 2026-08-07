@@ -11,7 +11,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SelectedTracksFragment() : Fragment() {
 
-    private lateinit var viewBiding: FragmentSelectedTracksBinding
+    private  var _viewBiding: FragmentSelectedTracksBinding? = null
+    private val viewBiding get() = _viewBiding!!
     private val viewModel: SelectedTracksViewModel by viewModel()
 
     override fun onCreateView(
@@ -19,13 +20,18 @@ class SelectedTracksFragment() : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewBiding = FragmentSelectedTracksBinding.inflate(inflater, container, false)
+        _viewBiding = FragmentSelectedTracksBinding.inflate(inflater, container, false)
         return viewBiding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewBiding.placeHolderNotSelect.isVisible = true
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _viewBiding = null
     }
     companion object {
         fun newInstance() = SelectedTracksFragment()
