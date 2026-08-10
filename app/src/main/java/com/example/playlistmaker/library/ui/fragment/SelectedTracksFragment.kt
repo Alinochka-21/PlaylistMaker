@@ -1,4 +1,4 @@
-package com.example.playlistmaker.library.ui.activity
+package com.example.playlistmaker.library.ui.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,8 +11,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SelectedTracksFragment() : Fragment() {
 
-    private  var _viewBiding: FragmentSelectedTracksBinding? = null
-    private val viewBiding get() = _viewBiding!!
+    private  var _viewBinding: FragmentSelectedTracksBinding? = null
+    private val viewBinding get() = _viewBinding!!
     private val viewModel: SelectedTracksViewModel by viewModel()
 
     override fun onCreateView(
@@ -20,18 +20,18 @@ class SelectedTracksFragment() : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _viewBiding = FragmentSelectedTracksBinding.inflate(inflater, container, false)
-        return viewBiding.root
+        _viewBinding = FragmentSelectedTracksBinding.inflate(inflater, container, false)
+        return viewBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewBiding.placeHolderNotSelect.isVisible = true
+        this@SelectedTracksFragment.viewBinding.placeHolderNotSelect.isVisible = true
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _viewBiding = null
+        _viewBinding = null
     }
     companion object {
         fun newInstance() = SelectedTracksFragment()
