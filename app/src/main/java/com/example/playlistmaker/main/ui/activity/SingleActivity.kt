@@ -1,9 +1,11 @@
 package com.example.playlistmaker.main.ui.activity
 import android.os.Bundle
+import android.view.ViewGroup
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.playlistmaker.App
@@ -24,12 +26,26 @@ class SingleActivity : AppCompatActivity() {
         setContentView(viewBiding.root)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.settings)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(viewBiding.bottomNavigationView) { v, insets ->
+            val layoutParams = v.layoutParams as ViewGroup.MarginLayoutParams
+            layoutParams.bottomMargin = 0
+            v.layoutParams = layoutParams
             insets
         }
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.main_fragment_container) as NavHostFragment
         val navController = navHostFragment.navController
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.audioPlayerFragment -> viewBiding.bottomNavigationView.isVisible = false
+                else -> viewBiding.bottomNavigationView.isVisible = true
+            }
+        }
 
         viewBiding.bottomNavigationView.setupWithNavController(navController)
 

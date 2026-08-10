@@ -26,7 +26,7 @@ class SelectedTracksFragment() : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        this@SelectedTracksFragment.viewBinding.placeHolderNotSelect.isVisible = true
+        viewBinding.placeHolderNotSelect.isVisible = true
     }
 
     override fun onDestroyView() {
