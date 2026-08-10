@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    >
 
     <LinearLayout
         android:id="@+id/placeHolderNotSelect"
@@ -13,7 +13,6 @@
         android:orientation="vertical"
         android:paddingTop="106dp"
         android:visibility="gone"
-
         tools:visibility="visible"
         >
         

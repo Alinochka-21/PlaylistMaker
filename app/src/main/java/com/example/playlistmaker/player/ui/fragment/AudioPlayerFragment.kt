@@ -1,4 +1,4 @@
-package com.example.playlistmaker.player.ui.activity
+package com.example.playlistmaker.player.ui.fragment
 
 import android.annotation.SuppressLint
 import android.media.MediaPlayer
@@ -6,16 +6,17 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.LayoutInflater
 import android.view.View
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
+import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.core.util.TypedValueCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
-import com.example.playlistmaker.databinding.ActivityAudioPlayerBinding
+import com.example.playlistmaker.databinding.FragmentAudioPlayerBinding
 import com.example.playlistmaker.player.ui.view_model.AudioPlayerViewModel
 import com.example.playlistmaker.player.ui.view_model.AudioPlayerViewModel.Companion.STATE_DEFAULT
 import com.example.playlistmaker.player.ui.view_model.AudioPlayerViewModel.Companion.STATE_PLAYING
@@ -24,56 +25,69 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import java.text.SimpleDateFormat
 import java.util.Locale
+import kotlin.getValue
 
-class AudioPlayerActivity : AppCompatActivity() {
+
+class AudioPlayerFragment() : Fragment() {
+    private var _viewBinding: FragmentAudioPlayerBinding? = null
+    private val viewBinding get() = _viewBinding!!
+
     private val lazyCurrentTrack: Track by lazy {
         if (Build.VERSION.SDK_INT >= 33) {
-            requireNotNull(intent.getParcelableExtra(CURRENT_TRACK, Track::class.java))
+            requireNotNull(requireArguments().getParcelable(CURRENT_TRACK, Track::class.java))
         } else {
             @Suppress("DEPRECATION")
-            requireNotNull(intent.getParcelableExtra(CURRENT_TRACK) as? Track)
+            requireNotNull(requireArguments().getParcelable(CURRENT_TRACK) as? Track)
         }
     }
+
     val viewModel: AudioPlayerViewModel by viewModel {
         parametersOf(lazyCurrentTrack.previewUrl)
     }
-    private lateinit var viewBiding: ActivityAudioPlayerBinding
-    @SuppressLint("CheckResult")
-    private val mediaPlayer = MediaPlayer()
+
     private val handler = Handler(Looper.getMainLooper())
+
     var currentRunnableTime = Runnable { }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewBiding = ActivityAudioPlayerBinding.inflate(layoutInflater)
-        enableEdgeToEdge()
-        setContentView(viewBiding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.audioPlayer)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+    @SuppressLint("CheckResult")
+    private val mediaPlayer = MediaPlayer()
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+       _viewBinding = FragmentAudioPlayerBinding.inflate(
+           inflater,
+           container,
+           false
+       )
+        return viewBinding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         val currentTrack = lazyCurrentTrack
 
-         val viewModel: AudioPlayerViewModel by viewModel() {
-             parametersOf(currentTrack!!.previewUrl)
-         }
-
-        viewModel.getTimer().observe(this) {
-            viewBiding.currentTimeTrack.text = it
+        val viewModel: AudioPlayerViewModel by viewModel() {
+            parametersOf(currentTrack!!.previewUrl)
         }
 
-        viewModel.getPlayerStatus().observe(this) {
+        viewModel.getTimer().observe(viewLifecycleOwner) {
+            viewBinding.currentTimeTrack.text = it
+        }
+
+        viewModel.getPlayerStatus().observe(viewLifecycleOwner) {
             playOrPause(it == STATE_PLAYING)
             canPressOnButton(it != STATE_DEFAULT)
         }
 
-        viewBiding.backButtonInPlayer.setOnClickListener {
-            finish()
+        viewBinding.backButtonInPlayer.setOnClickListener {
+            findNavController().navigateUp()
         }
 
-        viewBiding.trackConerOnPlayer.apply {
+        viewBinding.trackConerOnPlayer.apply {
             Glide.with(context)
                 .load(currentTrack!!.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"))
                 .placeholder(R.drawable.ic_default_45)
@@ -86,36 +100,35 @@ class AudioPlayerActivity : AppCompatActivity() {
                 .into(this)
         }
 
-
-        viewBiding.playTrackButton.setOnClickListener {
+        viewBinding.playTrackButton.setOnClickListener {
             viewModel.playButtonControl()
         }
 
-        viewBiding.trackDurationValue.text =
+        viewBinding.trackDurationValue.text =
             SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentTrack!!.trackTimeMillis)
 
-        viewBiding.trackAlbumValue.apply {
+        viewBinding.trackAlbumValue.apply {
             if (!currentTrack.collectionName.isNullOrEmpty()) {
                 text = currentTrack.collectionName
             } else {
                 visibility = View.GONE
-                viewBiding.trackAlbum.visibility = View.GONE
+                viewBinding.trackAlbum.visibility = View.GONE
             }
         }
 
-        viewBiding.trackYearValue.apply {
+        viewBinding.trackYearValue.apply {
             if (!currentTrack.releaseDate.isNullOrEmpty()) {
                 text = currentTrack.releaseDate.take(4)
             } else {
                 visibility = View.GONE
-                viewBiding.trackYear.visibility = View.GONE
+                viewBinding.trackYear.visibility = View.GONE
             }
         }
 
-        viewBiding.trackNameInPlayer.text = currentTrack.trackName
-        viewBiding.artistNameInPlayer.text = currentTrack.artistName
-        viewBiding.trackGenreValue.text = currentTrack.primaryGenreName
-        viewBiding.trackCountryValue.text = currentTrack.country
+        viewBinding.trackNameInPlayer.text = currentTrack.trackName
+        viewBinding.artistNameInPlayer.text = currentTrack.artistName
+        viewBinding.trackGenreValue.text = currentTrack.primaryGenreName
+        viewBinding.trackCountryValue.text = currentTrack.country
     }
 
     override fun onPause() {
@@ -123,25 +136,30 @@ class AudioPlayerActivity : AppCompatActivity() {
         viewModel.onPause()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         mediaPlayer.release()
         handler.removeCallbacks(currentRunnableTime)
+        _viewBinding = null
     }
-
     private fun playOrPause(play: Boolean) {
         if (play) {
-            viewBiding.playTrackButton.setImageResource(R.drawable.ic_pause_83)
+            viewBinding.playTrackButton.setImageResource(R.drawable.ic_pause_83)
         } else {
-            viewBiding.playTrackButton.setImageResource(R.drawable.ic_play_83)
+            viewBinding.playTrackButton.setImageResource(R.drawable.ic_play_83)
         }
     }
 
     private fun canPressOnButton(canPress: Boolean){
-        viewBiding.playTrackButton.isEnabled = canPress
+        viewBinding.playTrackButton.isEnabled = canPress
     }
 
     companion object {
-       private const val CURRENT_TRACK = "CURRENT_TRACK"
+        private const val CURRENT_TRACK = "CURRENT_TRACK"
+
+        fun putCurrentTrack(currentTrack: Track): Bundle{
+            return bundleOf(CURRENT_TRACK to currentTrack)
+        }
     }
 }
+
