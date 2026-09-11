@@ -3,14 +3,17 @@ package com.example.playlistmaker.search.ui.view_model
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.R
 import com.example.playlistmaker.search.domain.api.SearchHistoryInteractor
 import com.example.playlistmaker.search.domain.api.TrackInteractor
 import com.example.playlistmaker.search.domain.models.Track
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class SearchViewModel(
     private val context: Context,
@@ -19,72 +22,76 @@ class SearchViewModel(
     ) : ViewModel() {
 
     private var latestSearchText: String = ""
-    private val handler = Handler(Looper.getMainLooper())
-
     private val stateLiveData = MutableLiveData<State>()
     fun getStateLiveData(): LiveData<State> = stateLiveData
 
     private var isTrackEnable = MutableLiveData<Boolean>(true)
     fun getTrackEnable(): LiveData<Boolean> = isTrackEnable
+    private var debounceJob : Job? = null
+    private var clickJob: Job? = null
 
     private var historyTrackList: ArrayList<Track> = getHistoryTrackList()
 
     fun searchDebounce(textChanged: String){
-
         if (latestSearchText == textChanged){
             return
         }
 
         latestSearchText = textChanged
 
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-        val searchRunnable = Runnable {performSearch(textChanged)}
-
-        val time = SystemClock.uptimeMillis() + SEARCH_DEBOUNCE_DELAY
-        handler.postAtTime(searchRunnable, SEARCH_REQUEST_TOKEN, time)
+        debounceJob?.cancel()
+        debounceJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_DELAY)
+            performSearch(textChanged)
+        }
     }
-
 
     fun performSearch(newSearchText: String){
 
         if (newSearchText.isNotEmpty()) {
 
             latestSearchText = newSearchText
-            handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
 
-            postState(State.Loading())
+           postState(State.Loading())
 
-            tracksInteractor.searchTracks(newSearchText, object : TrackInteractor.TrackConsumer {
-
-                override fun onSuccess(tracks: List<Track>) {
-                    handler.post {
-                        if (tracks.isNotEmpty()) {
-                            postState(
-                                State.Content(tracks)
-                            )
-                        } else {
-                            postState(
-                                State.Empty(context.getString(R.string.not_found))
-                            )
-                        }
+            viewModelScope.launch {
+                tracksInteractor
+                    .searchTracks(newSearchText)
+                    .collect { pair ->
+                        processResult(pair.first,pair.second)
                     }
-                }
-
-                override fun onFailure(errorCode: Int, message: String) {
-                    handler.post {
-                        postState(
-                            State.Error(context.getString(R.string.not_internet))
-                        )
-                    }
-                }
-            })
+            }
         } else {
             setBeginningState()
         }
     }
 
+    private fun processResult(foundTracks: List<Track>?, errorMessage: String?) {
+        val tracks = mutableListOf<Track>()
+        if (foundTracks != null) {
+            tracks.addAll(foundTracks)
+        }
+        when {
+            errorMessage != null -> {
+                postState(
+                    State.Error(context.getString(R.string.not_internet))
+                )
+            }
+            tracks.isEmpty() -> {
+                postState(
+                    State.Empty(context.getString(R.string.not_found))
+                )
+            }
+            else -> {
+                postState(
+                    State.Content(tracks)
+                )
+            }
+        }
+
+    }
     fun setBeginningState(){
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
+        debounceJob?.cancel()
 
         if (historyTrackList.isEmpty) {
             postState(
@@ -135,25 +142,22 @@ class SearchViewModel(
 
     fun clickDebounce(){
         isTrackEnable.postValue(false)
-        handler.postAtTime(
-            {isTrackEnable.value = true},
-            CLICK_DEBOUNCE_TOKEN,
-            SystemClock.uptimeMillis() + CLICK_DEBOUNCE_DELAY
-        )
+        clickJob = viewModelScope.launch {
+            delay(CLICK_DEBOUNCE_DELAY)
+            isTrackEnable.value = true
+        }
     }
 
     override fun onCleared() {
         super.onCleared()
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-        handler.removeCallbacksAndMessages(CLICK_DEBOUNCE_TOKEN)
+        clickJob?.cancel()
+        clickJob = null
+        debounceJob?.cancel()
+        debounceJob = null
     }
 
     companion object{
-
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
         private const val CLICK_DEBOUNCE_DELAY = 1000L
-        private val SEARCH_REQUEST_TOKEN = Any()
-        private val CLICK_DEBOUNCE_TOKEN = Any()
-
     }
 }
