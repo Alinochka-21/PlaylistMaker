@@ -113,6 +113,9 @@ class SearchFragment() : Fragment() {
         viewModel.getStateLiveData().observe(viewLifecycleOwner) {
             render(it)
         }
+        viewBinding.updateButton.setOnClickListener {
+            viewModel.retryLastRequest()
+        }
     }
 
     override fun onDestroyView() {
@@ -209,7 +212,7 @@ class SearchFragment() : Fragment() {
     }
     fun toPlayer(currentTrack: Track){
         findNavController().navigate(
-            R.id.action_searchFragment2_to_audioPlayerFragment,
+            R.id.action_searchFragment_to_audioPlayerFragment,
             AudioPlayerFragment.putCurrentTrack(currentTrack)
             )
     }

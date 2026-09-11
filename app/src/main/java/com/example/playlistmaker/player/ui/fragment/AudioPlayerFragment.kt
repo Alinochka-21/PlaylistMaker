@@ -1,11 +1,7 @@
 package com.example.playlistmaker.player.ui.fragment
-
-import android.annotation.SuppressLint
-import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,16 +14,12 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentAudioPlayerBinding
 import com.example.playlistmaker.player.ui.view_model.AudioPlayerViewModel
-import com.example.playlistmaker.player.ui.view_model.AudioPlayerViewModel.Companion.STATE_DEFAULT
-import com.example.playlistmaker.player.ui.view_model.AudioPlayerViewModel.Companion.STATE_PLAYING
 import com.example.playlistmaker.search.domain.models.Track
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlin.getValue
-
-
 class AudioPlayerFragment() : Fragment() {
     private var _viewBinding: FragmentAudioPlayerBinding? = null
     private val viewBinding get() = _viewBinding!!
@@ -44,13 +36,6 @@ class AudioPlayerFragment() : Fragment() {
     val viewModel: AudioPlayerViewModel by viewModel {
         parametersOf(lazyCurrentTrack.previewUrl)
     }
-
-    private val handler = Handler(Looper.getMainLooper())
-
-    var currentRunnableTime = Runnable { }
-
-    @SuppressLint("CheckResult")
-    private val mediaPlayer = MediaPlayer()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -70,17 +55,10 @@ class AudioPlayerFragment() : Fragment() {
 
         val currentTrack = lazyCurrentTrack
 
-        val viewModel: AudioPlayerViewModel by viewModel() {
-            parametersOf(currentTrack!!.previewUrl)
-        }
-
-        viewModel.getTimer().observe(viewLifecycleOwner) {
-            viewBinding.currentTimeTrack.text = it
-        }
-
-        viewModel.getPlayerStatus().observe(viewLifecycleOwner) {
-            playOrPause(it == STATE_PLAYING)
-            canPressOnButton(it != STATE_DEFAULT)
+        viewModel.getPlayerStatus().observe(viewLifecycleOwner) { state ->
+            playOrPause(state.play)
+            canPressOnButton(state.isPlayButtonEnabled)
+            viewBinding.currentTimeTrack.text = state.progress
         }
 
         viewBinding.backButtonInPlayer.setOnClickListener {
@@ -89,7 +67,7 @@ class AudioPlayerFragment() : Fragment() {
 
         viewBinding.trackConerOnPlayer.apply {
             Glide.with(context)
-                .load(currentTrack!!.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"))
+                .load(currentTrack.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"))
                 .placeholder(R.drawable.ic_default_45)
                 .error(R.drawable.ic_default_45)
                 .transform(
@@ -105,7 +83,7 @@ class AudioPlayerFragment() : Fragment() {
         }
 
         viewBinding.trackDurationValue.text =
-            SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentTrack!!.trackTimeMillis)
+            SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentTrack.trackTimeMillis)
 
         viewBinding.trackAlbumValue.apply {
             if (!currentTrack.collectionName.isNullOrEmpty()) {
@@ -138,8 +116,6 @@ class AudioPlayerFragment() : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        mediaPlayer.release()
-        handler.removeCallbacks(currentRunnableTime)
         _viewBinding = null
     }
     private fun playOrPause(play: Boolean) {

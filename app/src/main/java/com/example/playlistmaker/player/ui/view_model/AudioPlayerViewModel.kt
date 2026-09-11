@@ -3,33 +3,23 @@ package com.example.playlistmaker.player.ui.view_model
 import android.media.MediaPlayer
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class AudioPlayerViewModel(val url: String) : ViewModel() {
-
-    companion object {
-        const val STATE_DEFAULT = 0
-        const val STATE_PREPARED = 1
-        const val STATE_PLAYING = 2
-        const val STATE_PAUSED = 3
-    }
-
-    private var liveTimer = MutableLiveData("0:00")
-    fun getTimer(): LiveData<String> = liveTimer
-
-    private var livePlayerStatus = MutableLiveData(STATE_DEFAULT)
-    fun getPlayerStatus(): LiveData<Int> = livePlayerStatus
+    private var livePlayerStatus = MutableLiveData<PlayerState>(PlayerState.Default())
+    fun getPlayerStatus(): LiveData<PlayerState> = livePlayerStatus
     private val mediaPlayer = MediaPlayer()
-    private val handler = Handler(Looper.getMainLooper())
-    var timerRunnable = Runnable {
-        if (livePlayerStatus.value == STATE_PLAYING) {
-            startTimer()
-        }
-    }
+
+    var timerJob: Job? = null
 
     init {
         prepareMediaPlayer()
@@ -40,25 +30,32 @@ class AudioPlayerViewModel(val url: String) : ViewModel() {
             setDataSource(url)
             prepareAsync()
             setOnPreparedListener{
-                livePlayerStatus.postValue(STATE_PREPARED)
+                livePlayerStatus.postValue(PlayerState.Prepared())
             }
             setOnCompletionListener{
-                livePlayerStatus.postValue(STATE_PREPARED)
-                resetTimer()
+                timerJob?.cancel()
+                timerJob = null
+                livePlayerStatus.postValue(PlayerState.Prepared())
             }
         }
     }
-
+    private fun startTimer(){
+        timerJob = viewModelScope.launch {
+            while (mediaPlayer.isPlaying){
+                delay(300L)
+                livePlayerStatus.postValue(PlayerState.Playing(getCurrentPlayerPosition()))
+            }
+        }
+    }
     private fun playTrack(){
         mediaPlayer.start()
-        livePlayerStatus.postValue(STATE_PLAYING)
+        livePlayerStatus.postValue(PlayerState.Playing(getCurrentPlayerPosition()))
         startTimer()
     }
-
     private fun pauseTrack(){
-        pauseTimer()
         mediaPlayer.pause()
-        livePlayerStatus.postValue(STATE_PAUSED)
+        timerJob?.cancel()
+        livePlayerStatus.postValue(PlayerState.Paused(getCurrentPlayerPosition()))
     }
 
     fun onPause() {
@@ -67,33 +64,20 @@ class AudioPlayerViewModel(val url: String) : ViewModel() {
 
     fun playButtonControl(){
         when (livePlayerStatus.value){
-            STATE_PLAYING -> pauseTrack()
-            STATE_PREPARED, STATE_PAUSED -> playTrack()
+            is PlayerState.Playing -> pauseTrack()
+            is PlayerState.Prepared, is PlayerState.Paused -> playTrack()
+            else -> return
         }
     }
 
-    private fun startTimer(){
-        liveTimer.postValue(
-            SimpleDateFormat(
-                "mm:ss",
-                Locale.getDefault()).format(mediaPlayer.currentPosition
-                )
-        )
-        handler.postDelayed(timerRunnable,500)
-    }
-
-    private fun pauseTimer(){
-        handler.removeCallbacks(timerRunnable)
-    }
-
-    private fun resetTimer(){
-        handler.removeCallbacks(timerRunnable)
-        liveTimer.postValue("0:00")
+    private fun getCurrentPlayerPosition(): String {
+            return SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
     }
 
     override fun onCleared() {
         super.onCleared()
+        mediaPlayer.stop()
         mediaPlayer.release()
-        resetTimer()
+        livePlayerStatus.value = PlayerState.Default()
     }
 }
