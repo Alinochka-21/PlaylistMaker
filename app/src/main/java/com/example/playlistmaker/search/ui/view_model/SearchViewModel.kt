@@ -29,6 +29,7 @@ class SearchViewModel(
     fun getTrackEnable(): LiveData<Boolean> = isTrackEnable
     private var debounceJob : Job? = null
     private var clickJob: Job? = null
+    private var searchJob: Job? = null
 
     private var historyTrackList: ArrayList<Track> = getHistoryTrackList()
 
@@ -52,7 +53,11 @@ class SearchViewModel(
 
             latestSearchText = newSearchText
 
-           postState(State.Loading())
+            searchJob?.cancel()
+            debounceJob?.cancel()
+
+
+            postState(State.Loading())
 
             viewModelScope.launch {
                 tracksInteractor
@@ -154,6 +159,8 @@ class SearchViewModel(
         clickJob = null
         debounceJob?.cancel()
         debounceJob = null
+        searchJob?.cancel()
+        searchJob = null
     }
 
     companion object{
