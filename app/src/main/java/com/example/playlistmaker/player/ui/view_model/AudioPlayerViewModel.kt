@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -71,7 +72,14 @@ class AudioPlayerViewModel(val url: String) : ViewModel() {
     }
 
     private fun getCurrentPlayerPosition(): String {
-            return SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
+        return try {
+            val position = mediaPlayer.currentPosition
+            val minutes = position / 1000 / 60
+            val seconds = position / 1000 % 60
+            String.format(Locale.getDefault(), "%d:%02d", minutes, seconds)
+        } catch (e: IllegalStateException) {
+            "0:00"
+        }
     }
 
     override fun onCleared() {

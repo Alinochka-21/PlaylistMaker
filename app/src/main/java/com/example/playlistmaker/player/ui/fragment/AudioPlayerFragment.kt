@@ -8,6 +8,9 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.core.util.TypedValueCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -15,6 +18,7 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentAudioPlayerBinding
 import com.example.playlistmaker.player.ui.view_model.AudioPlayerViewModel
 import com.example.playlistmaker.search.domain.models.Track
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import java.text.SimpleDateFormat
@@ -119,6 +123,10 @@ class AudioPlayerFragment() : Fragment() {
         _viewBinding = null
     }
     private fun playOrPause(play: Boolean) {
+        Log.d("IconDebug", "playOrPause: play = $play")
+        Log.d("IconDebug", "lifecycle = ${viewLifecycleOwner.lifecycle.currentState}")
+        Log.d("IconDebug", "Stack: ${Throwable().stackTraceToString()}")
+
         if (play) {
             viewBinding.playTrackButton.setImageResource(R.drawable.ic_pause_83)
         } else {
