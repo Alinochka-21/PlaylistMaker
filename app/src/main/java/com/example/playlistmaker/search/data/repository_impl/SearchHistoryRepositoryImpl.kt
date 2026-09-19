@@ -1,14 +1,27 @@
 package com.example.playlistmaker.search.data.repository_impl
 
+import com.example.playlistmaker.library.data.db.AppDataBase
 import com.example.playlistmaker.search.data.clients.StorageClient
 import com.example.playlistmaker.search.domain.api.SearchHistoryRepository
 import com.example.playlistmaker.search.domain.models.Track
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class SearchHistoryRepositoryImpl(
-    private val storage: StorageClient<List<Track>>) : SearchHistoryRepository {
+    private val storage: StorageClient<List<Track>>,
+    private val dataBase: AppDataBase
+) : SearchHistoryRepository {
 
-    override fun getHistoryTrackList(): List<Track> {
-        return storage.getData() ?: emptyList()
+    override fun getHistoryTrackList(): Flow<List<Track>> = flow {
+
+        val keys = dataBase.getTrackDao().getPrimaryKeys()
+
+        emit(
+            storage.getData()?.onEach { track ->
+            if (keys.contains(track.trackId)) {
+                track.isFavorite = true
+            }
+        } ?: emptyList())
     }
 
     override fun saveHistoryTrackList(tracks: List<Track>) {
