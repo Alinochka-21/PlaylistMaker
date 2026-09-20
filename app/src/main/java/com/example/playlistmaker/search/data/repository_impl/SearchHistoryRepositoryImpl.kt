@@ -12,16 +12,15 @@ class SearchHistoryRepositoryImpl(
     private val dataBase: AppDataBase
 ) : SearchHistoryRepository {
 
-    override fun getHistoryTrackList(): Flow<List<Track>> = flow {
+    override suspend fun getHistoryTrackList(): List<Track>{
 
         val keys = dataBase.getTrackDao().getPrimaryKeys()
 
-        emit(
-            storage.getData()?.onEach { track ->
+        return storage.getData()?.onEach{ track ->
             if (keys.contains(track.trackId)) {
                 track.isFavorite = true
             }
-        } ?: emptyList())
+        } ?: emptyList()
     }
 
     override fun saveHistoryTrackList(tracks: List<Track>) {

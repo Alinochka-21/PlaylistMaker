@@ -12,6 +12,7 @@ import com.example.playlistmaker.search.domain.api.SearchHistoryInteractor
 import com.example.playlistmaker.search.domain.api.TrackInteractor
 import com.example.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -31,7 +32,8 @@ class SearchViewModel(
     private var clickJob: Job? = null
     private var searchJob: Job? = null
 
-    private var historyTrackList: ArrayList<Track> = getHistoryTrackList()
+    private var historyTrackList: ArrayList<Track> = ArrayList()
+
 
     fun searchDebounce(textChanged: String){
         if (latestSearchText == textChanged){
@@ -116,12 +118,20 @@ class SearchViewModel(
     }
 
     fun  onFocusChanged(hasFocus: Boolean, query: String) {
-        val state = if (hasFocus && query.isEmpty() && historyTrackList.isNotEmpty()) {
-            State.HistoryContent(historyTrackList)
+        if (hasFocus && query.isEmpty()) {
+            viewModelScope.launch {
+                historyTrackList =
+                    ArrayList(searchHistoryInteractor.getTrackList())
+
+                if (historyTrackList.isNotEmpty()) {
+                    postState(State.HistoryContent(historyTrackList))
+                } else {
+                    postState(State.Default())
+                }
+            }
         } else {
-            State.Default()
+            postState(State.Default())
         }
-        postState(state)
     }
 
     fun postState(state: State){
@@ -130,20 +140,25 @@ class SearchViewModel(
 
     fun clearHistoryTrackList(){
         searchHistoryInteractor.clearTrackHistory()
+        historyTrackList.clear()
         postState(
             State.Default()
         )
     }
 
     fun addHistoryTrackList(track: Track){
-        searchHistoryInteractor.addTrack(track)
-        historyTrackList = ArrayList(searchHistoryInteractor.getTrackList())
+        viewModelScope.launch {
+            searchHistoryInteractor.addTrack(track)
+            historyTrackList = ArrayList(searchHistoryInteractor.getTrackList())
+        }
     }
 
-    fun getHistoryTrackList(): ArrayList<Track> {
-        historyTrackList = ArrayList(searchHistoryInteractor.getTrackList())
-        return  historyTrackList
+    /*fun getHistoryTrackList(): ArrayList<Track> {
+            historyTrackList = ArrayList(searchHistoryInteractor.getTrackList())
+            return historyTrackList
     }
+     */
+
 
     fun clickDebounce(){
         isTrackEnable.postValue(false)

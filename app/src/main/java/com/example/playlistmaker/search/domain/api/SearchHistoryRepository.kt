@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface SearchHistoryRepository {
 
-    fun getHistoryTrackList(): Flow<List<Track>>
+    suspend fun getHistoryTrackList(): List<Track>
 
     fun saveHistoryTrackList(tracks: List<Track>)
 
