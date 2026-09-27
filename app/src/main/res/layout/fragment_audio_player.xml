@@ -139,6 +139,7 @@
 
             <ImageButton
                 android:id="@+id/likeTrackButton"
+                style="@style/likeButtonInPlayer"
                 android:layout_width="50dp"
                 android:layout_height="0dp"
                 app:layout_constraintDimensionRatio="1:1"
@@ -148,7 +149,7 @@
                 app:layout_constraintBottom_toBottomOf="@id/playTrackButton"
                 app:srcCompat="@drawable/ic_dislike_25"
                 android:background="@drawable/round_button"
-                android:backgroundTint="@color/YP_Dark_Gray"/>
+                />
 
             <TextView
                 android:id="@+id/currentTimeTrack"

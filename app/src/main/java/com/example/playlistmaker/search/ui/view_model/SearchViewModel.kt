@@ -28,6 +28,7 @@ class SearchViewModel(
     private var debounceJob : Job? = null
     private var clickJob: Job? = null
     private var searchJob: Job? = null
+    private var focus : Boolean = false
 
     fun searchDebounce(textChanged: String){
         if (latestSearchText == textChanged){
@@ -95,7 +96,7 @@ class SearchViewModel(
         debounceJob?.cancel()
         viewModelScope.launch {
             val list = searchHistoryInteractor.getTrackList()
-            if (list.isEmpty()) {
+            if (list.isEmpty() || !focus) {
                 postState(
                     State.Default()
                 )
@@ -114,6 +115,7 @@ class SearchViewModel(
     }
 
     fun  onFocusChanged(hasFocus: Boolean, query: String) {
+        focus = hasFocus
         viewModelScope.launch {
             val list = searchHistoryInteractor.getTrackList()
             val state = if (hasFocus && query.isEmpty() && list.isNotEmpty()) {
