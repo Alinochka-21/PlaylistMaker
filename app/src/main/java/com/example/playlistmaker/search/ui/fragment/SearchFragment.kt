@@ -54,6 +54,7 @@ class SearchFragment() : Fragment() {
             TrackAdapter(emptyList()) { track ->
                 if (canPress) {
                     viewModel.clickDebounce()
+                    viewModel.addHistoryTrackList(track)
                     toPlayer(track)
                 }
             }

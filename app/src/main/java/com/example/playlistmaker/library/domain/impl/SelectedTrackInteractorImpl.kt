@@ -1,5 +1,6 @@
 package com.example.playlistmaker.library.domain.impl
 
+import android.util.Log
 import com.example.playlistmaker.library.domain.db.SelectedTrackInteractor
 import com.example.playlistmaker.library.domain.db.SelectedTracksRepository
 import com.example.playlistmaker.search.domain.models.Track
@@ -20,6 +21,6 @@ class SelectedTrackInteractorImpl(
 
     override fun getSelectedList(): Flow<List<Track>> {
         val trackList = selectedTracksRepository.getSelectedList()
-        return trackList.map { tracks -> tracks.reversed() }
+        return trackList
     }
 }

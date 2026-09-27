@@ -19,6 +19,8 @@ class SearchHistoryRepositoryImpl(
         return storage.getData()?.onEach{ track ->
             if (keys.contains(track.trackId)) {
                 track.isFavorite = true
+            } else {
+                track.isFavorite = false
             }
         } ?: emptyList()
     }

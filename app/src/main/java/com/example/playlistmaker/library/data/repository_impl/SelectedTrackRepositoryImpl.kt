@@ -6,7 +6,7 @@ import com.example.playlistmaker.library.data.db.entity.TrackEntity
 import com.example.playlistmaker.library.domain.db.SelectedTracksRepository
 import com.example.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
 class SelectedTrackRepositoryImpl(
     private val convertor: TrackDbConvertor,
@@ -23,10 +23,13 @@ class SelectedTrackRepositoryImpl(
         dataBase.getTrackDao().deleteTrack(trackEntity)
     }
 
-    override fun getSelectedList(): Flow<List<Track>> = flow {
-        val tracksEntity = dataBase.getTrackDao().getTracks()
-        emit(convertToTrackList(tracksEntity))
-    }
+    override fun getSelectedList(): Flow<List<Track>> =
+        dataBase.getTrackDao()
+            .getTracks()
+            .map {entities ->
+                convertToTrackList(entities)
+            }
+
 
     private fun convertToTrackList(tracksEntity: List<TrackEntity>): List<Track>{
         return tracksEntity.map { track -> convertor.mapToTrack(track)

@@ -1,8 +1,6 @@
 package com.example.playlistmaker.search.ui.view_model
 
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,7 +10,6 @@ import com.example.playlistmaker.search.domain.api.SearchHistoryInteractor
 import com.example.playlistmaker.search.domain.api.TrackInteractor
 import com.example.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -31,9 +28,6 @@ class SearchViewModel(
     private var debounceJob : Job? = null
     private var clickJob: Job? = null
     private var searchJob: Job? = null
-
-    private var historyTrackList: ArrayList<Track> = ArrayList()
-
 
     fun searchDebounce(textChanged: String){
         if (latestSearchText == textChanged){
@@ -99,38 +93,35 @@ class SearchViewModel(
     }
     fun setBeginningState(){
         debounceJob?.cancel()
-
-        if (historyTrackList.isEmpty) {
-            postState(
-                State.Default()
-            )
-        } else {
-            postState(
-                State.HistoryContent(historyTrackList)
-            )
+        viewModelScope.launch {
+            val list = searchHistoryInteractor.getTrackList()
+            if (list.isEmpty()) {
+                postState(
+                    State.Default()
+                )
+            } else {
+                postState(
+                    State.HistoryContent(list)
+                )
+            }
         }
     }
 
-    fun retryLastRequest(){
+     fun retryLastRequest(){
         if (latestSearchText.isNotEmpty()){
             performSearch(latestSearchText)
         }
     }
 
     fun  onFocusChanged(hasFocus: Boolean, query: String) {
-        if (hasFocus && query.isEmpty()) {
-            viewModelScope.launch {
-                historyTrackList =
-                    ArrayList(searchHistoryInteractor.getTrackList())
-
-                if (historyTrackList.isNotEmpty()) {
-                    postState(State.HistoryContent(historyTrackList))
-                } else {
-                    postState(State.Default())
-                }
+        viewModelScope.launch {
+            val list = searchHistoryInteractor.getTrackList()
+            val state = if (hasFocus && query.isEmpty() && list.isNotEmpty()) {
+                State.HistoryContent(list)
+            } else {
+                State.Default()
             }
-        } else {
-            postState(State.Default())
+            postState(state)
         }
     }
 
@@ -140,7 +131,6 @@ class SearchViewModel(
 
     fun clearHistoryTrackList(){
         searchHistoryInteractor.clearTrackHistory()
-        historyTrackList.clear()
         postState(
             State.Default()
         )
@@ -149,17 +139,8 @@ class SearchViewModel(
     fun addHistoryTrackList(track: Track){
         viewModelScope.launch {
             searchHistoryInteractor.addTrack(track)
-            historyTrackList = ArrayList(searchHistoryInteractor.getTrackList())
         }
     }
-
-    /*fun getHistoryTrackList(): ArrayList<Track> {
-            historyTrackList = ArrayList(searchHistoryInteractor.getTrackList())
-            return historyTrackList
-    }
-     */
-
-
     fun clickDebounce(){
         isTrackEnable.postValue(false)
         clickJob = viewModelScope.launch {

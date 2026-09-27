@@ -16,7 +16,8 @@ class TrackDbConvertor {
             primaryGenreName = trackEntity.primaryGenreName,
             collectionName = trackEntity.collectionName,
             releaseDate = trackEntity.releaseDate,
-            previewUrl = trackEntity.previewUrl
+            previewUrl = trackEntity.previewUrl,
+            isFavorite = true
         )
     }
 
@@ -31,7 +32,8 @@ class TrackDbConvertor {
             primaryGenreName = track.primaryGenreName,
             collectionName = track.collectionName,
             releaseDate = track.releaseDate,
-            previewUrl = track.previewUrl
+            previewUrl = track.previewUrl,
+            addedAt = System.currentTimeMillis()
         )
     }
 }
