@@ -8,12 +8,12 @@ class SearchHistoryInteractorImpl(
     private val historyRepository: SearchHistoryRepository
     ) : SearchHistoryInteractor {
 
-    override fun getTrackList(): List<Track> = historyRepository.getHistoryTrackList()
+    override suspend fun getTrackList(): List<Track> = historyRepository.getHistoryTrackList()
 
     override fun saveTrackList(tracks: List<Track>) = historyRepository.saveHistoryTrackList(tracks)
 
 
-    override fun addTrack(track: Track) {
+    override suspend fun addTrack(track: Track) {
 
         val trackHistory = getTrackList().toMutableList()
 

@@ -1,5 +1,6 @@
 package com.example.playlistmaker.search.data.repository_impl
 
+import com.example.playlistmaker.library.data.db.AppDataBase
 import com.example.playlistmaker.search.domain.api.TracksRepository
 import com.example.playlistmaker.search.domain.models.Track
 import com.example.playlistmaker.search.data.clients.NetWorkClient
@@ -9,7 +10,10 @@ import com.example.playlistmaker.search.domain.models.SearchResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class TrackRepositoryImpl(private val netWorkClient: NetWorkClient) : TracksRepository {
+class TrackRepositoryImpl(
+    private val netWorkClient: NetWorkClient,
+    private val database: AppDataBase
+) : TracksRepository {
 
     override fun searchTracks(searchString: String): Flow<SearchResult> = flow {
 
@@ -30,6 +34,13 @@ class TrackRepositoryImpl(private val netWorkClient: NetWorkClient) : TracksRepo
                              it.releaseDate,
                              it.previewUrl
                          )
+                     }
+                     val keys = database.getTrackDao().getPrimaryKeys()
+
+                     tracks.onEach { track ->
+                         if (keys.contains(track.trackId)) {
+                             track.isFavorite = true
+                         }
                      }
                      emit(SearchResult.Success(tracks))
                  }

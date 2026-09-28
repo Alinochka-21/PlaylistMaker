@@ -2,7 +2,10 @@ package com.example.playlistmaker
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
+import com.example.playlistmaker.library.di.databaseModule
+import com.example.playlistmaker.library.di.libraryRepositoryModule
 import com.example.playlistmaker.library.di.playlistsViewModelModule
+import com.example.playlistmaker.library.di.selectedTrackInteractorModule
 import com.example.playlistmaker.library.di.selectedTracksViewModelModule
 import com.example.playlistmaker.main.ui.di.mainViewModelModule
 import com.example.playlistmaker.player.di.playerViewModelModule
@@ -40,7 +43,10 @@ class App : Application() {
                 settingsViewModelModule,
                 mainViewModelModule,
                 selectedTracksViewModelModule,
-                playlistsViewModelModule
+                playlistsViewModelModule,
+                databaseModule,
+                libraryRepositoryModule,
+                selectedTrackInteractorModule
             )
         }
         instance = this

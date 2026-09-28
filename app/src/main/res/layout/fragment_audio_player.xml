@@ -139,7 +139,7 @@
 
             <ImageButton
                 android:id="@+id/likeTrackButton"
-                style="@style/roundButtonInPlayer"
+                style="@style/likeButtonInPlayer"
                 android:layout_width="50dp"
                 android:layout_height="0dp"
                 app:layout_constraintDimensionRatio="1:1"
@@ -147,8 +147,9 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/playTrackButton"
                 app:layout_constraintBottom_toBottomOf="@id/playTrackButton"
-                app:srcCompat="@drawable/ic_like_25"
-                android:background="@drawable/round_button"/>
+                app:srcCompat="@drawable/ic_dislike_25"
+                android:background="@drawable/round_button"
+                />
 
             <TextView
                 android:id="@+id/currentTimeTrack"

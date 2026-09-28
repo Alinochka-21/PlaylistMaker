@@ -54,6 +54,7 @@ class SearchFragment() : Fragment() {
             TrackAdapter(emptyList()) { track ->
                 if (canPress) {
                     viewModel.clickDebounce()
+                    viewModel.addHistoryTrackList(track)
                     toPlayer(track)
                 }
             }
@@ -89,7 +90,10 @@ class SearchFragment() : Fragment() {
         }
 
         viewBinding.editText.doOnTextChanged { s, _, _, _ ->
+            val newText = s?.toString() ?: ""
             viewBinding.buttonTextClear.visibility = clearButtonVisibility(s)
+
+            if (newText == savedText) return@doOnTextChanged
 
             if (s.toString().isNotEmpty()) {
                 viewModel.searchDebounce(
