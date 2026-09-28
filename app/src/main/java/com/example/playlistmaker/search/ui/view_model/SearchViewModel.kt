@@ -29,6 +29,7 @@ class SearchViewModel(
     private var clickJob: Job? = null
     private var searchJob: Job? = null
     private var focus : Boolean = false
+    private var lastContent : List<Track> = emptyList()
 
     fun searchDebounce(textChanged: String){
         if (latestSearchText == textChanged){
@@ -85,6 +86,7 @@ class SearchViewModel(
                 )
             }
             else -> {
+                lastContent = tracks
                 postState(
                     State.Content(tracks)
                 )
@@ -120,6 +122,8 @@ class SearchViewModel(
             val list = searchHistoryInteractor.getTrackList()
             val state = if (hasFocus && query.isEmpty() && list.isNotEmpty()) {
                 State.HistoryContent(list)
+            } else if (!hasFocus && query.isNotEmpty()) {
+                State.Content(lastContent)
             } else {
                 State.Default()
             }

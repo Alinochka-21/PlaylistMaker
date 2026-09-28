@@ -59,10 +59,7 @@ class AudioPlayerFragment() : Fragment() {
             playOrPause(state.play)
             canPressOnButton(state.isPlayButtonEnabled)
             viewBinding.currentTimeTrack.text = state.progress
-        }
-
-        viewModel.getIsFavorite().observe(viewLifecycleOwner) { like ->
-            changeLikeState(like)
+            changeLikeState(state.isFavorite)
         }
 
         viewBinding.backButtonInPlayer.setOnClickListener {
