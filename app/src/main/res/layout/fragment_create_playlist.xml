@@ -64,7 +64,7 @@
         android:layout_marginTop="32dp"
 
         android:hint="@string/playlistName"
-        app:hintTextColor="?attr/colorSecondary"
+        app:hintTextColor="@color/For_Edit_Text"
 
         app:boxCornerRadiusBottomEnd="3.5dp"
         app:boxCornerRadiusBottomStart="3.5dp"
@@ -94,7 +94,7 @@
         android:layout_marginHorizontal="16dp"
 
         android:hint="@string/description"
-        app:hintTextColor="?attr/colorSecondary"
+        app:hintTextColor="@color/For_Edit_Text"
 
         app:boxCornerRadiusBottomEnd="3.5dp"
         app:boxCornerRadiusBottomStart="3.5dp"
