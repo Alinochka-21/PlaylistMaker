@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("kotlin-parcelize")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -72,4 +73,11 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:1.5.6")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+
+    dependencies {
+        val room_version = "2.8.4"
+        implementation("androidx.room:room-runtime:${room_version}")
+        ksp("androidx.room:room-compiler:$room_version")
+        implementation("androidx.room:room-ktx:${room_version}")
+    }
 }

@@ -34,7 +34,7 @@ class AudioPlayerFragment() : Fragment() {
     }
 
     val viewModel: AudioPlayerViewModel by viewModel {
-        parametersOf(lazyCurrentTrack.previewUrl)
+        parametersOf(lazyCurrentTrack.previewUrl,lazyCurrentTrack.isFavorite)
     }
 
     override fun onCreateView(
@@ -59,6 +59,7 @@ class AudioPlayerFragment() : Fragment() {
             playOrPause(state.play)
             canPressOnButton(state.isPlayButtonEnabled)
             viewBinding.currentTimeTrack.text = state.progress
+            changeLikeState(state.isFavorite)
         }
 
         viewBinding.backButtonInPlayer.setOnClickListener {
@@ -84,6 +85,13 @@ class AudioPlayerFragment() : Fragment() {
 
         viewBinding.trackDurationValue.text =
             SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentTrack.trackTimeMillis)
+
+        viewBinding.likeTrackButton.setOnClickListener {
+            val newFavoriteState = !currentTrack.isFavorite
+            currentTrack.isFavorite = newFavoriteState
+            viewModel.onFavoriteClicked(currentTrack)
+        }
+
 
         viewBinding.trackAlbumValue.apply {
             if (!currentTrack.collectionName.isNullOrEmpty()) {
@@ -134,6 +142,13 @@ class AudioPlayerFragment() : Fragment() {
         viewBinding.playTrackButton.isEnabled = canPress
     }
 
+    private fun changeLikeState(like: Boolean){
+        if (like){
+            viewBinding.likeTrackButton.setImageResource(R.drawable.ic_like_25)
+        } else {
+            viewBinding.likeTrackButton.setImageResource(R.drawable.ic_dislike_25)
+        }
+    }
     companion object {
         private const val CURRENT_TRACK = "CURRENT_TRACK"
 

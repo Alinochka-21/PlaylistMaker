@@ -123,6 +123,10 @@
         <item name="android:tint">@color/YP_White</item>
     </style>
 
+    <style name="likeButtonInPlayer">
+        <item name="android:backgroundTint">@color/YP_Dark_Gray</item>
+    </style>
+
     <style name="tableText">
         <item name="android:textSize">14sp</item>
         <item name="android:fontFamily">@font/ys_display_medium</item>
