@@ -5,17 +5,24 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.playlistmaker.library.domain.db.PlaylistInteractor
 import com.example.playlistmaker.library.domain.db.SelectedTrackInteractor
+import com.example.playlistmaker.library.domain.model.Playlist
 import com.example.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.Locale
 
-class AudioPlayerViewModel(val url: String, val isFavorite: Boolean, val selectedTrackInteractor: SelectedTrackInteractor) : ViewModel() {
+class AudioPlayerViewModel(val url: String, val isFavorite: Boolean, val selectedTrackInteractor: SelectedTrackInteractor, val playlistInteractor: PlaylistInteractor) : ViewModel() {
     private var livePlayerStatus = MutableLiveData<PlayerState>(PlayerState.Default(isFavorite))
     fun getPlayerStatus(): LiveData<PlayerState> = livePlayerStatus
     private val mediaPlayer = MediaPlayer()
+    private lateinit var playlistList: List<Playlist>
+
+    private var bottomSheetState = MutableLiveData<BottomSheetState>()
+    fun getSheetState(): LiveData<BottomSheetState> = bottomSheetState
 
     var timerJob: Job? = null
 
@@ -97,6 +104,21 @@ class AudioPlayerViewModel(val url: String, val isFavorite: Boolean, val selecte
             currentState?.isFavorite = true
             livePlayerStatus.postValue(currentState!!)
         }
+        }
+    }
+    suspend fun getPlaylist(): List<Playlist> {
+        return playlistInteractor.getPlaylist().first()
+    }
+
+    fun addTrack(name: String, id: Long, idTracks: ArrayList<Long>, currentTrack: Track){
+        if (idTracks.contains(currentTrack.trackId)) {
+            bottomSheetState.postValue(BottomSheetState.AlreadyState(name))
+        } else {
+            viewModelScope.launch {
+                playlistInteractor.addTrack(id, currentTrack)
+                val response = playlistInteractor.addSuccessCheck(id,currentTrack.trackId)
+                bottomSheetState.postValue(BottomSheetState.Success(name,response))
+            }
         }
     }
 }

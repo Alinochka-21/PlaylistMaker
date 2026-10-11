@@ -4,6 +4,9 @@ import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import com.example.playlistmaker.library.di.databaseModule
 import com.example.playlistmaker.library.di.libraryRepositoryModule
+import com.example.playlistmaker.library.di.playlistCreatorViewModelModule
+import com.example.playlistmaker.library.di.playlistInteractorModule
+import com.example.playlistmaker.library.di.playlistRepositoryModule
 import com.example.playlistmaker.library.di.playlistsViewModelModule
 import com.example.playlistmaker.library.di.selectedTrackInteractorModule
 import com.example.playlistmaker.library.di.selectedTracksViewModelModule
@@ -19,6 +22,7 @@ import com.example.playlistmaker.settings.di.domain.repository.settingsRepositor
 import com.example.playlistmaker.settings.di.viewModel.settingsViewModelModule
 import com.example.playlistmaker.sharing.di.sharingInteractorModule
 import com.example.playlistmaker.sharing.di.sharingDataModule
+import com.markodevcic.peko.PermissionRequester
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin
 
@@ -28,6 +32,9 @@ class App : Application() {
 
     override fun onCreate(){
         super.onCreate()
+
+        PermissionRequester.initialize(applicationContext)
+
         startKoin {
             androidContext(this@App)
             modules(
@@ -46,7 +53,10 @@ class App : Application() {
                 playlistsViewModelModule,
                 databaseModule,
                 libraryRepositoryModule,
-                selectedTrackInteractorModule
+                selectedTrackInteractorModule,
+                playlistRepositoryModule,
+                playlistInteractorModule,
+                playlistCreatorViewModelModule
             )
         }
         instance = this

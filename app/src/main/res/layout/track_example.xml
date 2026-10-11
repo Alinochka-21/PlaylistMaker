@@ -46,7 +46,7 @@
             <TextView
                 android:id="@+id/artistName"
                 android:layout_weight="1"
-                style="@style/TextViewInTrackExample"
+                style="@style/TextViewInTrackOrPlaylistExample"
                 android:text="@string/artist_name">
             </TextView>
 
@@ -56,7 +56,7 @@
 
             <TextView
                 android:id="@+id/trackTime"
-                style="@style/TextViewInTrackExample"
+                style="@style/TextViewInTrackOrPlaylistExample"
                 android:ellipsize="none"
                 android:text="@string/track_time">
             </TextView>
