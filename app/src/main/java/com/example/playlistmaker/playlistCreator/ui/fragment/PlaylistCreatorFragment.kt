@@ -30,23 +30,24 @@ import com.markodevcic.peko.PermissionResult
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
+import kotlin.math.PI
 
-class PlaylistCreatorFragment() : Fragment(){
+open class PlaylistCreatorFragment() : Fragment(){
 
-    var _viewBinding: FragmentCreatePlaylistBinding? = null
-    private val viewBinding get() = _viewBinding!!
-    private val viewModel: PlaylistCreatorViewModel by viewModel()
-    private var currentCoverForBack: Uri? = null
-    private var savedUri: Uri? = null
-    private var currentName = ""
-    private var currentDescription = ""
+    private var _viewBinding: FragmentCreatePlaylistBinding? = null
+    protected val viewBinding get() = _viewBinding!!
+
+    open  val viewModel: PlaylistCreatorViewModel by viewModel()
+    protected var currentCoverForBack: Uri? = null
+    protected var savedUri: Uri? = null
+    protected var currentName = ""
+    protected var currentDescription = ""
     private var dialog: MaterialAlertDialogBuilder? = null
 
     private var pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         currentCoverForBack = uri
         if (uri!=null) {
             viewBinding.albumCover.setImageURI(uri)
-          //  saveImageToPrivateStorage(uri)
         }
     }
 
@@ -97,7 +98,7 @@ class PlaylistCreatorFragment() : Fragment(){
 
         viewBinding.createPlaylist.setOnClickListener {
             saveImageToPrivateStorage(currentCoverForBack)
-            viewModel.addPlaylist(currentName,currentDescription,savedUri)
+            viewModel.addPlaylist(currentName,getDescription(currentDescription),savedUri)
             Snackbar.make(viewBinding.root, "Плейлист $currentName создан", Snackbar.LENGTH_LONG).show()
             currentCoverForBack = null
             savedUri = null
@@ -113,7 +114,7 @@ class PlaylistCreatorFragment() : Fragment(){
         }
     }
 
-    private fun saveImageToPrivateStorage(uri: Uri?) {
+    protected fun saveImageToPrivateStorage(uri: Uri?) {
         if (uri != null) {
             val filePath = File(
                 requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES),
@@ -177,12 +178,15 @@ class PlaylistCreatorFragment() : Fragment(){
         requireActivity().startActivity(intent)
     }
 
-    private fun backLogic() {
+    open fun backLogic() {
         if (currentCoverForBack == null && currentName.isBlank() && currentDescription.isBlank()) {
             findNavController().navigateUp()
         } else {
             dialog?.show()
         }
+    }
+    private fun getDescription(description: String): String {
+        return description.ifBlank { "" }
     }
 }
 

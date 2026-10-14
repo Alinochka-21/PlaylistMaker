@@ -5,6 +5,8 @@ import com.example.playlistmaker.library.domain.model.Playlist
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import androidx.core.net.toUri
+import com.example.playlistmaker.library.data.db.entity.PlaylistTracksEntity
+import com.example.playlistmaker.search.domain.models.Track
 
 class PlaylistDbConverter (private val gson: Gson) {
 
@@ -34,8 +36,24 @@ class PlaylistDbConverter (private val gson: Gson) {
             playlistDescription = playlistEntity.playlistDescription ?: "",
             coverUri = uri,
             trackIdList = trackIdList ?: arrayListOf(),
-            playlistSize = playlistEntity.playlistSize,
+            playlistSize = trackIdList.size,
             playlistId = playlistEntity.playlistId
+        )
+    }
+
+    fun toTrack(playlistTracksEntity: PlaylistTracksEntity): Track {
+        return Track(
+            trackName = playlistTracksEntity.trackName,
+            artistName = playlistTracksEntity.artistName,
+            trackTimeMillis = playlistTracksEntity.trackTimeMillis,
+            artworkUrl100 = playlistTracksEntity.artworkUrl100,
+            trackId = playlistTracksEntity.trackId,
+            country = playlistTracksEntity.country,
+            primaryGenreName = playlistTracksEntity.primaryGenreName,
+            collectionName = playlistTracksEntity.collectionName,
+            releaseDate = playlistTracksEntity.releaseDate,
+            previewUrl = playlistTracksEntity.previewUrl,
+            isFavorite = playlistTracksEntity.isFavorite,
         )
     }
 

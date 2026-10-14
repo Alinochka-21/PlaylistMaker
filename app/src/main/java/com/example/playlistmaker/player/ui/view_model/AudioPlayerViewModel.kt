@@ -19,8 +19,6 @@ class AudioPlayerViewModel(val url: String, val isFavorite: Boolean, val selecte
     private var livePlayerStatus = MutableLiveData<PlayerState>(PlayerState.Default(isFavorite))
     fun getPlayerStatus(): LiveData<PlayerState> = livePlayerStatus
     private val mediaPlayer = MediaPlayer()
-    private lateinit var playlistList: List<Playlist>
-
     private var bottomSheetState = MutableLiveData<BottomSheetState>()
     fun getSheetState(): LiveData<BottomSheetState> = bottomSheetState
 

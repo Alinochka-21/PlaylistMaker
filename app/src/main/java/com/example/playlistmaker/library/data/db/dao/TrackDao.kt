@@ -23,4 +23,7 @@ interface TrackDao {
 
     @Query("SELECT trackId FROM track_table")
     suspend fun getPrimaryKeys(): List<Long>
+
+    @Query("SELECT trackId FROM track_table")
+     fun getAllTrackIds(): Flow<List<Long>>
 }
