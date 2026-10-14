@@ -5,16 +5,24 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.core.util.TypedValueCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentAudioPlayerBinding
+import com.example.playlistmaker.library.ui.view_model.PlaylistsViewModel
+import com.example.playlistmaker.player.di.playerViewModelModule
 import com.example.playlistmaker.player.ui.view_model.AudioPlayerViewModel
+import com.example.playlistmaker.player.ui.view_model.BottomSheetState
 import com.example.playlistmaker.search.domain.models.Track
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import java.text.SimpleDateFormat
@@ -115,6 +123,83 @@ class AudioPlayerFragment() : Fragment() {
         viewBinding.artistNameInPlayer.text = currentTrack.artistName
         viewBinding.trackGenreValue.text = currentTrack.primaryGenreName
         viewBinding.trackCountryValue.text = currentTrack.country
+
+        val adapter = PlaylistListAdapter(emptyList()) { playlist ->
+            viewModel.addTrack(
+                name = playlist.playlistName,
+                id = playlist.playlistId,
+                idTracks = playlist.trackIdList,
+                currentTrack = currentTrack
+            )
+        }
+
+        viewBinding.playlistListRecycler.adapter = adapter
+
+        val overlay = viewBinding.overlay
+        val bottomSheet = BottomSheetBehavior.from(viewBinding.bottomSheetConstructor).apply {
+            state = BottomSheetBehavior.STATE_HIDDEN
+        }
+
+        bottomSheet.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                when (newState) {
+                    BottomSheetBehavior.STATE_HIDDEN -> {
+                        overlay.visibility = View.GONE
+                    }
+                    BottomSheetBehavior.STATE_COLLAPSED -> {
+                        overlay.visibility = View.VISIBLE
+                    }
+                    else -> {
+                        overlay.visibility = View.VISIBLE
+                    }
+                }
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+        })
+
+        viewBinding.addTrackInPlaylistButton.setOnClickListener {
+
+            viewLifecycleOwner.lifecycleScope.launch {
+                val playlist = viewModel.getPlaylist()
+                adapter.updatePlaylists(playlist)
+                bottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED)
+            }
+        }
+
+        viewBinding.toPlaylistCreatorFromPlayer.setOnClickListener {
+            findNavController()
+                .navigate(R.id.action_audioPlayerFragment_to_playlistCreatorFragment)
+        }
+
+        fun trackAlreadyIncluded(playlistName: String) {
+            Snackbar.make(viewBinding.root,"Трек уже добавлен в плейлист $playlistName", Snackbar.LENGTH_LONG).show()
+        }
+        fun trackIncluded(playlistName: String, success: Boolean){
+            viewLifecycleOwner.lifecycleScope.launch {
+                bottomSheet.state = BottomSheetBehavior.STATE_HIDDEN
+                val playlist = viewModel.getPlaylist()
+                adapter.updatePlaylists(playlist)
+                Snackbar.make(viewBinding.root, "Добавлено в плейлист $playlistName", Snackbar.LENGTH_LONG).show()
+            }
+        }
+
+        viewModel.getSheetState().observe(viewLifecycleOwner) {state ->
+            when (state) {
+                is BottomSheetState.Success -> {
+                    trackIncluded(state.name, state.success)
+                }
+                is BottomSheetState.AlreadyState -> {
+                    trackAlreadyIncluded(state.name)
+                }
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        BottomSheetBehavior.from(viewBinding.bottomSheetConstructor).state = BottomSheetBehavior.STATE_HIDDEN
     }
 
     override fun onPause() {
@@ -149,6 +234,7 @@ class AudioPlayerFragment() : Fragment() {
             viewBinding.likeTrackButton.setImageResource(R.drawable.ic_dislike_25)
         }
     }
+
     companion object {
         private const val CURRENT_TRACK = "CURRENT_TRACK"
 

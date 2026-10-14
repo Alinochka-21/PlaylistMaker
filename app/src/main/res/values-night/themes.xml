@@ -20,7 +20,7 @@
         <item name="android:layout_marginBottom">21dp</item>
         <item name="tint">@color/YP_White</item>
     </style>
-    <style name="TextViewInTrackExample">
+    <style name="TextViewInTrackOrPlaylistExample">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:maxLines">1</item>
@@ -80,5 +80,4 @@
     <style name="Theme.OnlyMainDisplay" parent="Base.Theme.PlaylistMaker">
         <item name="android:windowBackground">?attr/colorPrimary</item>
     </style>
-
 </resources>

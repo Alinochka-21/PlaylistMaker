@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/playlistExample"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/playlistCoverInRecycler"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        app:shapeAppearanceOverlay="@style/RoundedImageInPlaylistTable"
+        android:scaleType="centerCrop"
+        tools:src="@drawable/img_empty_cover_103"
+        />
+
+    <TextView
+        android:id="@+id/playlistNameInRecycler"
+        style="@style/playlistListStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:ellipsize="end"
+        tools:text="Playlist name"
+        />
+
+    <TextView
+        android:id="@+id/tracksCountInRecycler"
+        style="@style/playlistListStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        tools:text="666 tracks"
+        />
+</LinearLayout>

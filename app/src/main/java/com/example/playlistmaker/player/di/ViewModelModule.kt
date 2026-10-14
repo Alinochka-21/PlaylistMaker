@@ -6,6 +6,6 @@ import org.koin.dsl.module
 
 val playerViewModelModule = module {
     viewModel { (url: String, isFavorite: Boolean) ->
-        AudioPlayerViewModel(url, isFavorite,get())
+        AudioPlayerViewModel(url, isFavorite,get(), get())
     }
 }
