@@ -69,7 +69,11 @@ open class PlaylistCreatorFragment() : Fragment(){
 
         viewBinding.playlistName.doOnTextChanged {s, _, _, _ ->
             currentName = s.toString()
-            viewBinding.createPlaylist.isEnabled = !s.isNullOrEmpty()
+            if (s?.isBlank() ?: s.isNullOrEmpty()) {
+                viewBinding.createPlaylist.isEnabled = false
+            } else {
+                viewBinding.createPlaylist.isEnabled = true
+            }
         }
 
         viewBinding.playlistDescription.doOnTextChanged { s, _, _, _ ->

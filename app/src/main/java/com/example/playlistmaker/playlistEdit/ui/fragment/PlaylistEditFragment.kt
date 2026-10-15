@@ -19,7 +19,6 @@ class PlaylistEditFragment() : PlaylistCreatorFragment() {
     private var oldCover: Uri? = null
     override val viewModel: PlaylistEditViewModel by viewModel()
     private var newName: String = ""
-    private var newDescription: String = ""
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -27,23 +26,19 @@ class PlaylistEditFragment() : PlaylistCreatorFragment() {
         val blue = ContextCompat.getColor(requireContext(), R.color.YP_Blue)
         val blueStateList = ColorStateList.valueOf(blue)
 
-        viewBinding.playlistNameStroke.apply {
+        with(viewBinding.playlistNameStroke) {
+            hintTextColor = blueStateList
+            setBoxStrokeColorStateList(blueStateList)
+        }
+        viewBinding.playlistName.setHintTextColor(blue)
+
+        with(viewBinding.playlistDescriptionStroke) {
             hintTextColor = blueStateList
             setBoxStrokeColorStateList(blueStateList)
         }
 
-        viewBinding.playlistName.apply {
-            setHintTextColor(blue)
-        }
+        viewBinding.playlistDescription.setHintTextColor(blue)
 
-        viewBinding.playlistDescriptionStroke.apply {
-            hintTextColor = blueStateList
-            setBoxStrokeColorStateList(blueStateList)
-        }
-
-        viewBinding.playlistDescription.apply {
-            setHintTextColor(blue)
-        }
 
         viewBinding.createPlaylist.text = getString(R.string.save)
         viewBinding.newPlaylist.text = getString(R.string.editPlaylist)
@@ -72,11 +67,15 @@ class PlaylistEditFragment() : PlaylistCreatorFragment() {
 
         viewBinding.playlistName.doOnTextChanged { s, _, _, _ ->
             newName = s.toString()
-            viewBinding.createPlaylist.isEnabled = !s.isNullOrEmpty()
+            if (s?.isBlank() ?: s.isNullOrEmpty()) {
+                viewBinding.createPlaylist.isEnabled = false
+            } else {
+                viewBinding.createPlaylist.isEnabled = true
+            }
         }
 
         viewBinding.playlistDescription.doOnTextChanged { s, _, _, _ ->
-            newDescription = s.toString()
+            currentDescription = s.toString()
         }
 
         viewBinding.createPlaylist.setOnClickListener {
@@ -100,9 +99,7 @@ class PlaylistEditFragment() : PlaylistCreatorFragment() {
         }
     }
     private fun getDescription(): String {
-        return newDescription.ifEmpty {
-            currentDescription
-        }
+       return currentDescription
     }
 
     private fun getCover(): Uri? {

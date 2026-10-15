@@ -8,16 +8,19 @@ import com.example.playlistmaker.library.domain.db.PlaylistInteractor
 import com.example.playlistmaker.library.domain.model.Playlist
 import com.example.playlistmaker.playlist.domain.intereractor.SharePlaylistInteractor
 import com.example.playlistmaker.search.domain.models.Track
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 open class PlaylistViewModel(private val interactor: PlaylistInteractor, private val navigateInteractor: SharePlaylistInteractor) : ViewModel() {
     private var mutableState : MutableLiveData<PlaylistInfoState> = MutableLiveData()
     private lateinit var playlist: Playlist
     private lateinit var trackList: List<Track>
+    private var collectJob: Job? = null
 
     fun getState() : LiveData<PlaylistInfoState> = mutableState
 
     fun getPlaylistInfo(id: Long) {
+        collectJob?.cancel()
         viewModelScope.launch {
             val currentPlaylist = interactor.getPlaylistInfo(id)
             playlist = currentPlaylist

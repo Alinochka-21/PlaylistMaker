@@ -72,13 +72,23 @@ class PlaylistRepositoryImpl(
         idPlaylist: Long,
         idTrack: Long
     ) {
-        val oldEntity = dataBase.getPlaylistDao().getPlaylistInfo(idPlaylist)
-        val listId = converter.stringToList(oldEntity.tracklist!!)
-        listId.remove(idTrack)
-        val newStringId = converter.listToString(listId)
-        dataBase.getPlaylistDao().changeTrackList(oldEntity.playlistId, newStringId)
 
-        dataBase.getPlaylistTracksDao().deleteTrack(idTrack)
+        val allStringId = dataBase.getPlaylistDao().getAllTracksId()
+        val allIds: MutableList<Long> = allStringId.flatMap { str ->
+            converter.stringToList(str)
+        }.toMutableList()
+
+        val currentEntity = dataBase.getPlaylistDao().getPlaylistInfo(idPlaylist)
+        val tracksIdCurrentPlaylist =  converter.stringToList(currentEntity.tracklist!!)
+
+        allIds.remove(idTrack)
+        if (!allIds.contains(idTrack)) {
+            dataBase.getPlaylistTracksDao().deleteTrack(idTrack)
+        }
+
+        tracksIdCurrentPlaylist.remove(idTrack)
+        val newStringId = converter.listToString(tracksIdCurrentPlaylist)
+        dataBase.getPlaylistDao().changeTrackList(currentEntity.playlistId, newStringId)
     }
 
     override suspend fun changePlaylist(

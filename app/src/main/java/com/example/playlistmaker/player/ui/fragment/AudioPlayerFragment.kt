@@ -98,7 +98,6 @@ class AudioPlayerFragment() : Fragment() {
             viewModel.onFavoriteClicked(currentTrack)
         }
 
-
         viewBinding.trackAlbumValue.apply {
             if (!currentTrack.collectionName.isNullOrEmpty()) {
                 text = currentTrack.collectionName
