@@ -15,8 +15,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentAudioPlayerBinding
-import com.example.playlistmaker.library.ui.view_model.PlaylistsViewModel
-import com.example.playlistmaker.player.di.playerViewModelModule
 import com.example.playlistmaker.player.ui.view_model.AudioPlayerViewModel
 import com.example.playlistmaker.player.ui.view_model.BottomSheetState
 import com.example.playlistmaker.search.domain.models.Track
@@ -99,7 +97,6 @@ class AudioPlayerFragment() : Fragment() {
             currentTrack.isFavorite = newFavoriteState
             viewModel.onFavoriteClicked(currentTrack)
         }
-
 
         viewBinding.trackAlbumValue.apply {
             if (!currentTrack.collectionName.isNullOrEmpty()) {

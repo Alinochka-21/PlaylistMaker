@@ -12,7 +12,8 @@ val databaseModule = module {
                 AppDataBase.MIGRATION_1_2,
                 AppDataBase.MIGRATION_2_3,
                 AppDataBase.MIGRATION_3_4,
-                AppDataBase.MIGRATION_4_5
+                AppDataBase.MIGRATION_4_5,
+                AppDataBase.MIGRATION_5_6
             )
             .build()
     }

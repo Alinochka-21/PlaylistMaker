@@ -13,7 +13,7 @@ import com.example.playlistmaker.library.data.db.entity.PlaylistTracksEntity
 import com.example.playlistmaker.library.data.db.entity.TrackEntity
 
 @Database(
-    version = 5,
+    version = 6,
     entities = [TrackEntity::class, PlaylistEntity::class, PlaylistTracksEntity::class]
 )
 abstract class AppDataBase : RoomDatabase(){
@@ -70,6 +70,11 @@ abstract class AppDataBase : RoomDatabase(){
                     previewUrl TEXT NOT NULL,
                     addedAt INTEGER NOT NULL )
                 """)
+            }
+        }
+        val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE playlist_tracks_table ADD COLUMN isFavorite INTEGER NOT NULL DEFAULT 0")
             }
         }
     }

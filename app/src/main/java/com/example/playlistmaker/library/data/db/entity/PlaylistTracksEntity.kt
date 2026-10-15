@@ -1,5 +1,6 @@
 package com.example.playlistmaker.library.data.db.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -16,4 +17,6 @@ data class PlaylistTracksEntity (
     val collectionName: String?,
     val releaseDate: String?,
     val previewUrl: String,
+    @ColumnInfo(defaultValue = "0")
+    var isFavorite: Boolean = false,
     val addedAt: Long = System.currentTimeMillis() )
