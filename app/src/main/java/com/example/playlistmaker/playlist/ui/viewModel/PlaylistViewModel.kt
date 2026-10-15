@@ -21,7 +21,7 @@ open class PlaylistViewModel(private val interactor: PlaylistInteractor, private
 
     fun getPlaylistInfo(id: Long) {
         collectJob?.cancel()
-        viewModelScope.launch {
+        collectJob = viewModelScope.launch {
             val currentPlaylist = interactor.getPlaylistInfo(id)
             playlist = currentPlaylist
             interactor.getTracksFromPlaylist(currentPlaylist.trackIdList).collect { tracks ->

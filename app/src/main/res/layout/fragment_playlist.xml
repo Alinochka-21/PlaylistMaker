@@ -153,7 +153,6 @@
             android:orientation="vertical"
             app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
             app:behavior_hideable="false"
-            app:behavior_peekHeight="240dp"
             android:background="@drawable/bottom_sheet_shape"
             >
 
