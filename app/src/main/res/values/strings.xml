@@ -46,9 +46,33 @@
     <string name="dialog_description">Все несохраненные данные будут потеряны</string>
     <string name="cancel">Отмена</string>
     <string name="complete">Завершить</string>
-    <string name="one">" трек"</string>
-    <string name="two_to_four">" трека"</string>
-    <string name="from_four">" треков"</string>
     <string name="add_in_playlist">Добавить в плейлист</string>
     <string name="track_included">Трек уже добавлен в плейлист %s»</string>
+
+    <string name="delete_dialog">Хотите удалить трек?</string>
+    <string name="yes">ДА</string>
+    <string name="no">НЕТ</string>
+    <string name="no_tracks_in_playlist">В этом плейлисте нет списка треков, которым можно поделиться</string>
+    <string name="share">Поделиться</string>
+    <string name="edit">Редактировать информацию</string>
+    <string name="delete">Удалить плейлист</string>
+    <string name="sureDeletePlaylist">Вы уверены, что хотите удалить плейлист?</string>
+    <string name="editPlaylist"> Редактировать</string>
+    <string name="save">Сохранить</string>
+    <string name="no_tracks">В этом плейлисте нет треков</string>
+    <string name="yes_delete">Удалить</string>
+
+    <plurals name="track_count">
+        <item quantity="one">%d трек</item>
+        <item quantity="few">%d трека</item>
+        <item quantity="many">%d треков</item>
+        <item quantity="other">%d трека</item>
+    </plurals>
+
+    <plurals name="minutes_count">
+        <item quantity="one">%d минута</item>
+        <item quantity="few">%d минуты</item>
+        <item quantity="many">%d минут</item>
+        <item quantity="other">%d минуты</item>
+    </plurals>
 </resources>

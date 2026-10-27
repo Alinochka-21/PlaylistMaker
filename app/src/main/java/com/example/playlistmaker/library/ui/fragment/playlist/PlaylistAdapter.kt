@@ -18,6 +18,10 @@ class PlaylistAdapter(private var playlists: List<Playlist>, private val onItemC
         position: Int
     ) {
         holder.bind(playlists[position])
+
+        holder.itemView.setOnClickListener {
+            onItemClick(playlists[position])
+        }
     }
 
     override fun getItemCount(): Int {
@@ -28,4 +32,5 @@ class PlaylistAdapter(private var playlists: List<Playlist>, private val onItemC
         playlists = newPlaylists
         notifyDataSetChanged()
     }
+
 }

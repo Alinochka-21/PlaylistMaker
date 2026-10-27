@@ -16,21 +16,13 @@ class PlaylistTableViewHolder(private val binding: PlaylistTableExampleBinding) 
     @SuppressLint("SetTextI18n")
     fun bind(playlist: Playlist) {
         binding.playlistNameInRecycler.text = playlist.playlistName
-        binding.tracksCountInRecycler.text = playlist.trackIdList.size.toString() + wordEnding(playlist.trackIdList.size)
+        binding.tracksCountInRecycler.text = itemView.context.resources.getQuantityString(R.plurals.track_count,playlist.playlistSize, playlist.playlistSize)
         if (playlist.coverUri == null) {
             binding.playlistCoverInRecycler.setImageResource(R.drawable.img_empty_cover_103)
             binding.playlistCoverInRecycler.scaleType = ImageView.ScaleType.CENTER
         } else {
             binding.playlistCoverInRecycler.setImageURI(playlist.coverUri)
             binding.playlistCoverInRecycler.scaleType = ImageView.ScaleType.CENTER_CROP
-        }
-    }
-
-    private fun wordEnding(count: Int): String{
-        return when(count) {
-            1 ->  binding.root.context.getString(R.string.one)
-            in (2..4) -> binding.root.context.getString(R.string.two_to_four)
-            else -> binding.root.context.getString(R.string.from_four)
         }
     }
 

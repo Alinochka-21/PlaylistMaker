@@ -12,6 +12,10 @@ import com.example.playlistmaker.library.di.selectedTrackInteractorModule
 import com.example.playlistmaker.library.di.selectedTracksViewModelModule
 import com.example.playlistmaker.main.ui.di.mainViewModelModule
 import com.example.playlistmaker.player.di.playerViewModelModule
+import com.example.playlistmaker.playlist.di.playlistViewModel
+import com.example.playlistmaker.playlist.di.shareNavigateModule
+import com.example.playlistmaker.playlist.di.sharePlaylistInteractorModule
+import com.example.playlistmaker.playlistEdit.di.editViewModelModule
 import com.example.playlistmaker.search.di.Domain.interactorModule
 import com.example.playlistmaker.search.di.Domain.repositoryModule
 import com.example.playlistmaker.search.di.searchDataModule
@@ -56,7 +60,11 @@ class App : Application() {
                 selectedTrackInteractorModule,
                 playlistRepositoryModule,
                 playlistInteractorModule,
-                playlistCreatorViewModelModule
+                playlistCreatorViewModelModule,
+                playlistViewModel,
+                shareNavigateModule,
+                sharePlaylistInteractorModule,
+                editViewModelModule
             )
         }
         instance = this

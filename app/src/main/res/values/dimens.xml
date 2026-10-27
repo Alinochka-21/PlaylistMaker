@@ -4,4 +4,5 @@
     <dimen name="textSize">22sp</dimen>
     <dimen name="iconSize">24dp</dimen>
     <dimen name="iconPadding">8dp</dimen>
+    <dimen name="bottom_sheet_margin_top">24dp</dimen>
 </resources>
